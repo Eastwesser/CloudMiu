@@ -65,7 +65,6 @@ magic-filter==1.0.12
 moviepy==1.0.3
 multidict==6.0.5
 numpy==1.26.4
-pillow==10.3.0
 proglog==0.1.10
 pydantic==2.7.1
 pydantic-settings==2.2.1
