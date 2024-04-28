@@ -47,11 +47,13 @@ aiohttp==3.9.5
 aiosignal==1.3.1
 annotated-types==0.6.0
 anyio==4.3.0
+async-timeout==4.0.3
 attrs==23.2.0
 certifi==2024.2.2
 charset-normalizer==3.3.2
 colorama==0.4.6
 decorator==4.4.2
+exceptiongroup==1.2.1
 frozenlist==1.4.1
 h11==0.14.0
 httpcore==1.0.5
@@ -71,12 +73,10 @@ pydantic_core==2.18.2
 python-dotenv==1.0.1
 pytz==2024.1
 requests==2.31.0
-setuptools==69.5.1
 sniffio==1.3.1
 tqdm==4.66.2
 typing_extensions==4.11.0
 urllib3==2.2.1
-wheel==0.43.0
 yarl==1.9.4
 ```
 
