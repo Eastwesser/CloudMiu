@@ -94,8 +94,8 @@ async def play_games_bowling(message: Message):
 @router.message(F.text == ButtonText.DICE)
 async def handle_dice_message(message: types.Message):
     await message.answer(
-        text="Meow! If you want to ask me about the weather,\n"
-             "Click /weather_start any time! :3",
+        text="Meow! If you want to throw a dice,\n"
+             "Click /dice any time! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
@@ -126,7 +126,7 @@ async def play_games_casino(message: Message):
 @router.message(F.text == ButtonText.DART)
 async def handle_dart_message(message: types.Message):
     await message.answer(
-        text="Nya! Click /weather_start any time! :3",
+        text="Nya! Click /dart to throw a dart any time! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
