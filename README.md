@@ -1,7 +1,8 @@
 # MiuMiu
 
 MiuMiu, your friendly Telegram bot, has undergone exciting updates, bringing a plethora of new features to enhance your
-chatting experience. Powered by asyncio and aiogram, MiuMiu is now smarter and more versatile than ever before! 😎
+chatting experience. Powered by asyncio and aiogram, constantly running in Docker, MiuMiu is now smarter and more 
+versatile than ever before! 😎
 
 ## Features
 
