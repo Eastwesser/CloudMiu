@@ -309,7 +309,7 @@ async def handle_user_input(message: Message, state: FSMContext):
             "modelUri": f"gpt://{big_poco}/yandexgpt-lite",
             "completionOptions": {
                 "stream": False,
-                "temperature": 0.5,
+                "temperature": 0.4,
                 "maxTokens": "2000"
             },
             "messages": [
