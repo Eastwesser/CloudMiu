@@ -488,7 +488,7 @@ async def handle_kadinskiy_message(message: types.Message):
 @router.message(Command("start_kadinsky", prefix="!/"))
 async def start(message: types.Message):
     await message.answer(
-        "Welcome to the Kandinsky bot! Please, press on the button ^w^\n"
+        "Welcome to the Kandinsky bot! Please, press on the button 'Text to Image' ^w^\n"
         "And please, don't ask me to draw violent or forbidden things!\n"
         "I have paws 😿",
         reply_markup=get_text_to_image_kb()
