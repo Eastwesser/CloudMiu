@@ -102,15 +102,15 @@ async def send_actions_message_w_kb(message: types.Message):
 # STICKER BOT ==========================================================================================================
 class StickerButtonText:
     COOL_SERVAL = "Cool serval"
-    SERVAL_IN_SUNGLASSES = "Serval in sunglasses"
-    SUNEUS = "SunEus"
-    STREET = "Street"
-    OASIS = "Oasis"
-    OLEG_2 = "Oleg 2.0"
-    SKIBIDI = "Skibidi"
-    RED_SQUARE = "Red Square"
-    BLACK_SQUARE = "Black Square"
-    KITTENS = "Kittens"
+    NIKA = "Eustoma"
+    ROCKET_KITTY = "Rocket-cat"
+    RED_FOXIE = "Red fox"
+    KITTY = "Cutie kitten"
+    FOX = "Chonky Fox"
+    GENSHIN = "Genshin Impact"
+    TIK_TOK = "Tiktok animals"
+    HSR = "HSR"
+    MANGA = "Manga"
 
 
 async def send_sticker(chat_id, sticker_id):
@@ -139,25 +139,42 @@ async def send_keyboard_command(message: types.Message):
 
 def get_sticker_kb() -> ReplyKeyboardMarkup:
     buttons_row_1 = [
-        KeyboardButton(text=StickerButtonText.COOL_SERVAL),
-        KeyboardButton(text=StickerButtonText.SERVAL_IN_SUNGLASSES),
-        KeyboardButton(text=StickerButtonText.SUNEUS)
+        KeyboardButton(
+            text=StickerButtonText.COOL_SERVAL
+        ),
+        KeyboardButton(
+            text=StickerButtonText.NIKA
+        ),
+        KeyboardButton(
+            text=StickerButtonText.ROCKET_KITTY
+        ),
     ]
     buttons_row_2 = [
-        KeyboardButton(text=StickerButtonText.STREET),
-        KeyboardButton(text=StickerButtonText.OASIS),
-        KeyboardButton(text=StickerButtonText.OLEG_2)
+        KeyboardButton(
+            text=StickerButtonText.RED_FOXIE
+        ),
+        KeyboardButton(
+            text=StickerButtonText.KITTY
+        ),
+        KeyboardButton(
+            text=StickerButtonText.FOX
+        ),
     ]
     buttons_row_3 = [
         KeyboardButton(
-            text=StickerButtonText.SKIBIDI
+            text=StickerButtonText.GENSHIN
         ),
         KeyboardButton(
-            text=StickerButtonText.RED_SQUARE),
-        KeyboardButton(text=StickerButtonText.BLACK_SQUARE)
+            text=StickerButtonText.TIK_TOK
+        ),
+        KeyboardButton(
+            text=StickerButtonText.HSR
+        ),
     ]
     buttons_row_4 = [
-        KeyboardButton(text=StickerButtonText.KITTENS)
+        KeyboardButton(
+            text=StickerButtonText.MANGA
+        ),
     ]
 
     markup_keyboard = ReplyKeyboardMarkup(
@@ -178,142 +195,142 @@ async def process_button(callback_query: types.CallbackQuery, sticker_id: str):
 
 
 # 1
-@router.callback_query(lambda query: query.data == 'cool_serv')
+@router.callback_query(lambda query: query.data == 'cool_serval')
 async def process_cool_serv(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_slGXeebJxA-smlFeQFcexQR34-OsnAAKlRwACeIjxSufdBql9SW5PNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSIGY063zYcJsNIAwHRE9NnjiLjzWmAAJKSQAC4AfxSkws0ZUa6nFtNAQ'
     )
 
 
 @router.message(lambda message: message.text == StickerButtonText.COOL_SERVAL)
 async def cool_serv_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_slGXeebJxA-smlFeQFcexQR34-OsnAAKlRwACeIjxSufdBql9SW5PNAQ'
+    sticker_id = 'CAACAgIAAxkBAVPSIGY063zYcJsNIAwHRE9NnjiLjzWmAAJKSQAC4AfxSkws0ZUa6nFtNAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 2
-@router.callback_query(lambda query: query.data == 'glasses_serv')
-async def process_glasses_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'eustoma')
+async def process_eustoma(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_slmXeebWKjkaEg5xXdlFC9VJzFsSEAAJKSQAC4AfxSkws0ZUa6nFtNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSAmY06vl7dAsZCAKHmSqN5FH9d5PYAAISUAAClT8RSGf6RXnVmT2nNAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.SERVAL_IN_SUNGLASSES)
-async def sunglasses_serv_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_slmXeebWKjkaEg5xXdlFC9VJzFsSEAAJKSQAC4AfxSkws0ZUa6nFtNAQ'
+@router.message(lambda message: message.text == StickerButtonText.NIKA)
+async def eustoma_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSAmY06vl7dAsZCAKHmSqN5FH9d5PYAAISUAAClT8RSGf6RXnVmT2nNAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 3
-@router.callback_query(lambda query: query.data == 'sun_eus')
-async def process_cool_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'rocket_kitty')
+async def process_rocket_kitty(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_smGXeebe82JbxsqexupZWb9YOL2SaAALPRgACQ-_wSsms8aFXQhOSNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSDmY06yAl2_skuYkJi9Vz8fRrlLb6AAKoSAACWHM5SUoG_rkCAUQAATQE'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.SUNEUS)
-async def sun_eus_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_smGXeebe82JbxsqexupZWb9YOL2SaAALPRgACQ-_wSsms8aFXQhOSNAQ'
+@router.message(lambda message: message.text == StickerButtonText.ROCKET_KITTY)
+async def rocket_kitty_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSDmY06yAl2_skuYkJi9Vz8fRrlLb6AAKoSAACWHM5SUoG_rkCAUQAATQE'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 4
-@router.callback_query(lambda query: query.data == 'street')
-async def process_glasses_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'red_foxie')
+async def process_red_fox(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_soGXeebpSnYxCOPqUm4GiYDj15C6kAAK6RgACtanwSv8NkGfNOgS6NAQ'
+        callback_query, 'CAACAgIAAxkBAVPSC2Y06xS5BOYGOg3FdBu39cHMjjatAAL_GwAC11hpSDnOE4z7Np33NAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.STREET)
-async def street_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_soGXeebpSnYxCOPqUm4GiYDj15C6kAAK6RgACtanwSv8NkGfNOgS6NAQ'
+@router.message(lambda message: message.text == StickerButtonText.RED_FOXIE)
+async def red_fox_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSC2Y06xS5BOYGOg3FdBu39cHMjjatAAL_GwAC11hpSDnOE4z7Np33NAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 5
-@router.callback_query(lambda query: query.data == 'oasis')
-async def process_cool_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'kitty')
+async def process_cutie_kitty(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_somXeebtdpovxM2aAqPEvW8ZCfyj4AAL8SwACY5rwSo_kEFHCOdpoNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSBWY06wdjNO71aHgvFkTUgaAzgw7_AAJjKQACkpAZS_BALMjD9j1gNAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.OASIS)
-async def oasis_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_somXeebtdpovxM2aAqPEvW8ZCfyj4AAL8SwACY5rwSo_kEFHCOdpoNAQ'
+@router.message(lambda message: message.text == StickerButtonText.KITTY)
+async def cutie_kitty_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSBWY06wdjNO71aHgvFkTUgaAzgw7_AAJjKQACkpAZS_BALMjD9j1gNAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 6
-@router.callback_query(lambda query: query.data == 'oleg')
-async def process_glasses_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'chonky_fox')
+async def process_chonky_fox(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_spGXeebxGlwkUwCehdE1ugbducK6jAAJaTwACmqLxSiv44wKDZl_GNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSE2Y06z9rV1zG9p8NU3cwXVKJvM6qAAIHAwACz7vUDpXjgMoqn_mKNAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.OLEG_2)
-async def oleg_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_spGXeebxGlwkUwCehdE1ugbducK6jAAJaTwACmqLxSiv44wKDZl_GNAQ'
+@router.message(lambda message: message.text == StickerButtonText.FOX)
+async def chonky_fox_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSE2Y06z9rV1zG9p8NU3cwXVKJvM6qAAIHAwACz7vUDpXjgMoqn_mKNAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 7
-@router.callback_query(lambda query: query.data == 'toilet')
-async def process_cool_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'genshin')
+async def process_genshin(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_smmXeebj_VnSxhZD20G1RNCOJ2gmeAAKdOgAC25D4SuqOAAFAo4NcKTQE'
+        callback_query, 'CAACAgUAAxkBAVPSHmY0620IpHcCQrD8ZkLl6Q0mKD5UAALxDAACjIaBVVP5YlW7vh92NAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.SKIBIDI)
-async def skibidi_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_smmXeebj_VnSxhZD20G1RNCOJ2gmeAAKdOgAC25D4SuqOAAFAo4NcKTQE'
+@router.message(lambda message: message.text == StickerButtonText.GENSHIN)
+async def genshin_handler(message: types.Message):
+    sticker_id = 'CAACAgUAAxkBAVPSHmY0620IpHcCQrD8ZkLl6Q0mKD5UAALxDAACjIaBVVP5YlW7vh92NAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 8
-@router.callback_query(lambda query: query.data == 'red_square')
-async def process_glasses_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'tik_tok')
+async def process_tik_tok_animals(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_snGXeebkIeZvNweKIlzAG17XQbB1IAAKIRQACnfbwStsTyclJ3JsGNAQ'
+        callback_query, 'CAACAgIAAxkBAVPSGmY061-ICZ4RrxvlgLeHi6KkUWd5AAIqRwACYdpoSKsAAQ2QWBSuaDQE'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.RED_SQUARE)
-async def red_square_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_snGXeebkIeZvNweKIlzAG17XQbB1IAAKIRQACnfbwStsTyclJ3JsGNAQ'
+@router.message(lambda message: message.text == StickerButtonText.TIK_TOK)
+async def tik_tok_animals_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSGmY061-ICZ4RrxvlgLeHi6KkUWd5AAIqRwACYdpoSKsAAQ2QWBSuaDQE'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 9
-@router.callback_query(lambda query: query.data == 'black_square')
-async def process_cool_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'hsr')
+async def process_hsr(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_snmXeebqfEeJu5Sdzssod8rjLWCFdAAI3RQACMcvxSlyQjDvlecR5NAQ'
+        callback_query, 'CAACAgIAAxkBAVPSFmY061WAA6rHHWhdvUxCv7u7ig9PAAK_MAAC6dvJSH8MV1OceRHLNAQ'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.BLACK_SQUARE)
-async def black_square_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_snmXeebqfEeJu5Sdzssod8rjLWCFdAAI3RQACMcvxSlyQjDvlecR5NAQ'
+@router.message(lambda message: message.text == StickerButtonText.HSR)
+async def hsr_handler(message: types.Message):
+    sticker_id = 'CAACAgIAAxkBAVPSFmY061WAA6rHHWhdvUxCv7u7ig9PAAK_MAAC6dvJSH8MV1OceRHLNAQ'
     await send_sticker(message.chat.id, sticker_id)
 
 
 # 10
-@router.callback_query(lambda query: query.data == 'kittens')
-async def process_glasses_serv(callback_query: types.CallbackQuery):
+@router.callback_query(lambda query: query.data == 'manga')
+async def process_manga(callback_query: types.CallbackQuery):
     await process_button(
-        callback_query, 'CAACAgIAAxkBAT_q_mXeZb3RFKlAR4yp5GbS0nfsH0kbAAL9PQACIgzxSsCa0NR6qOSDNAQ'
+        callback_query, 'CAACAgEAAxkBAVPR_mY06uLrPTII3Y8iZyRbGU7VAAH9WAACqwoAApl_iAIiidAVEPqjMTQE'
     )
 
 
-@router.message(lambda message: message.text == StickerButtonText.KITTENS)
-async def kittens_handler(message: types.Message):
-    sticker_id = 'CAACAgIAAxkBAT_q_mXeZb3RFKlAR4yp5GbS0nfsH0kbAAL9PQACIgzxSsCa0NR6qOSDNAQ'
+@router.message(lambda message: message.text == StickerButtonText.MANGA)
+async def manga_handler(message: types.Message):
+    sticker_id = 'CAACAgEAAxkBAVPR_mY06uLrPTII3Y8iZyRbGU7VAAH9WAACqwoAApl_iAIiidAVEPqjMTQE'
     await send_sticker(message.chat.id, sticker_id)
 
 
