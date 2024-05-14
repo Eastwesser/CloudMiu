@@ -288,8 +288,8 @@ async def handle_yandexgpt_message(message: types.Message):
 async def ask_miumiu_gpt(message: Message, state: FSMContext):
     await message.answer(
         "Привет! Задайте ваш вопрос :3\n"
-        "Пожалуйста, не обижайте меня и не задавайте грубые вопросы 🐱‍💻\n"
-        "You may now ask your question ^w^\n"
+        "Пожалуйста, не обижайте меня и не задавайте грубые вопросы 😸\n"
+        "You may now ask your question /ᐠ｡ꞈ｡ᐟ\ﾉ\n"
         "Don't be mean and don't ask violent or forbidden questions :c",
         reply_markup=types.ReplyKeyboardRemove(),
     )
