@@ -37,35 +37,69 @@ class ButtonText:
 
 
 def get_on_start_kb() -> ReplyKeyboardMarkup:
-    button_hello = KeyboardButton(text=ButtonText.HELLO)
-    button_help = KeyboardButton(text=ButtonText.WHATS_NEXT)
-    button_bye = KeyboardButton(text=ButtonText.BYE)
+    button_hello = KeyboardButton(
+        text=ButtonText.HELLO
+    )
+    button_help = KeyboardButton(
+        text=ButtonText.WHATS_NEXT
+    )
+    button_bye = KeyboardButton(
+        text=ButtonText.BYE
+    )
+
     buttons_row_1 = [button_hello, button_help]
     buttons_row_2 = [button_bye]
+
     markup_keyboard = ReplyKeyboardMarkup(
-        keyboard=[buttons_row_1,
-                  buttons_row_2],
+        keyboard=[
+            buttons_row_1,
+            buttons_row_2,
+        ],
         resize_keyboard=True,
     )
     return markup_keyboard
 
 
 def get_on_help_kb() -> ReplyKeyboardMarkup:
-    button_weather = KeyboardButton(text=ButtonText.WEATHER)
-    button_yandex_gpt = KeyboardButton(text=ButtonText.YANDEX_GPT)
-    button_kadinsky = KeyboardButton(text=ButtonText.KADINSKY)
+    button_weather = KeyboardButton(
+        text=ButtonText.WEATHER
+    )
+    button_yandex_gpt = KeyboardButton(
+        text=ButtonText.YANDEX_GPT
+    )
+    button_kadinsky = KeyboardButton(
+        text=ButtonText.KADINSKY
+    )
 
-    button_currency = KeyboardButton(text=ButtonText.CURRENCY)
-    button_calculator = KeyboardButton(text=ButtonText.CALCULATOR)
-    button_converter = KeyboardButton(text=ButtonText.CONVERTER)
+    button_currency = KeyboardButton(
+        text=ButtonText.CURRENCY
+    )
+    button_calculator = KeyboardButton(
+        text=ButtonText.CALCULATOR
+    )
+    button_converter = KeyboardButton(
+        text=ButtonText.CONVERTER
+    )
 
-    button_magnetic_storm = KeyboardButton(text=ButtonText.MAGNETIC_STORM)
-    button_python_presentation = KeyboardButton(text=ButtonText.PYTHON_PRESENTATION)
-    button_video_to_mp3 = KeyboardButton(text=ButtonText.VIDEO_TO_MP3)
+    button_magnetic_storm = KeyboardButton(
+        text=ButtonText.MAGNETIC_STORM
+    )
+    button_python_presentation = KeyboardButton(
+        text=ButtonText.PYTHON_PRESENTATION
+    )
+    button_video_to_mp3 = KeyboardButton(
+        text=ButtonText.VIDEO_TO_MP3
+    )
 
-    button_memes = KeyboardButton(text=ButtonText.MEMES)
-    button_stickers = KeyboardButton(text=ButtonText.STICKERS)
-    button_games = KeyboardButton(text=ButtonText.GAMES)
+    button_memes = KeyboardButton(
+        text=ButtonText.MEMES
+    )
+    button_stickers = KeyboardButton(
+        text=ButtonText.STICKERS
+    )
+    button_games = KeyboardButton(
+        text=ButtonText.GAMES
+    )
 
     buttons_row_1 = [button_weather, button_yandex_gpt, button_kadinsky]
     buttons_row_2 = [button_currency, button_calculator, button_converter]
@@ -85,13 +119,25 @@ def get_on_help_kb() -> ReplyKeyboardMarkup:
 
 
 def get_games_kb() -> ReplyKeyboardMarkup:
-    button_rps = KeyboardButton(text=ButtonText.RPS)
-    button_blackjack = KeyboardButton(text=ButtonText.BLACKJACK)
-    button_blockme = KeyboardButton(text=ButtonText.BLOCK_ME)
+    button_rps = KeyboardButton(
+        text=ButtonText.RPS
+    )
+    button_blackjack = KeyboardButton(
+        text=ButtonText.BLACKJACK
+    )
+    button_blockme = KeyboardButton(
+        text=ButtonText.BLOCK_ME
+    )
 
-    button_battleship = KeyboardButton(text=ButtonText.BATTLESHIP)
-    button_five_cats = KeyboardButton(text=ButtonText.FIVE_CATS)
-    button_emoji = KeyboardButton(text=ButtonText.EMOJI)
+    button_battleship = KeyboardButton(
+        text=ButtonText.BATTLESHIP
+    )
+    button_five_cats = KeyboardButton(
+        text=ButtonText.FIVE_CATS
+    )
+    button_emoji = KeyboardButton(
+        text=ButtonText.EMOJI
+    )
 
     buttons_row_1 = [button_rps, button_blackjack, button_blockme]
     buttons_row_2 = [button_battleship, button_five_cats, button_emoji]
@@ -105,13 +151,25 @@ def get_games_kb() -> ReplyKeyboardMarkup:
 
 
 def get_games_emoji_kb() -> ReplyKeyboardMarkup:
-    button_dice = KeyboardButton(text=ButtonText.DICE)
-    button_darts = KeyboardButton(text=ButtonText.DART)
-    button_casino = KeyboardButton(text=ButtonText.CASINO)
+    button_dice = KeyboardButton(
+        text=ButtonText.DICE
+    )
+    button_darts = KeyboardButton(
+        text=ButtonText.DART
+    )
+    button_casino = KeyboardButton(
+        text=ButtonText.CASINO
+    )
 
-    button_football = KeyboardButton(text=ButtonText.FOOTBALL)
-    button_basketball = KeyboardButton(text=ButtonText.BASKETBALL)
-    button_bowling = KeyboardButton(text=ButtonText.BOWLING)
+    button_football = KeyboardButton(
+        text=ButtonText.FOOTBALL
+    )
+    button_basketball = KeyboardButton(
+        text=ButtonText.BASKETBALL
+    )
+    button_bowling = KeyboardButton(
+        text=ButtonText.BOWLING
+    )
 
     buttons_row_1 = [button_dice, button_darts, button_casino]
     buttons_row_2 = [button_football, button_basketball, button_bowling]
