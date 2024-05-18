@@ -21,9 +21,8 @@ load_dotenv()
 router = Router(name=__name__)
 
 
-@router.message(CommandStart())  # added in m1, renamed in m5
+@router.message(CommandStart())
 async def handle_start(message: types.Message):
-    # url = "https://64.media.tumblr.com/e04c17953a3bf8678feb7bcb5b7fbcfe/813055467fd14c85-9c/s1280x1920/8b0d5f82035c6e26ce66f29d50415a7d8897d55e.gifv"
     welcome_sticker_id = "CAACAgIAAxkBAU0juGYWfesC5Y_5wM1gxbKqoEcp0LgbAAIzNgACYrv5SpdmcVJVwH4zNAQ"
     await message.answer_sticker(sticker=welcome_sticker_id)
 
@@ -35,7 +34,7 @@ async def handle_start(message: types.Message):
 
 
 @router.message(F.text == ButtonText.WHATS_NEXT)
-@router.message(Command("help", prefix="!/"))  # added in m1, and prefix="!/" in m3
+@router.message(Command("help", prefix="!/"))
 async def handle_help(message: types.Message):
     text = markdown.text(
         markdown.markdown_decoration.quote("I'm MiuMiu, your personal little helper!"),

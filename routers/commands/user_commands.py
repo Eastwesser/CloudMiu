@@ -4,9 +4,12 @@ import os
 import re
 
 import aiohttp
-from aiogram import Bot
-from aiogram import Router
-from aiogram import types, Dispatcher
+from aiogram import (
+    types,
+    Dispatcher,
+    Router,
+    Bot,
+)
 from aiogram.enums import ParseMode, ChatAction
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
