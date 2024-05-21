@@ -28,7 +28,7 @@ async def handle_start(message: types.Message):
 
     await message.answer(
         text=f"{markdown.hide_link(welcome_sticker_id)}Hello, I'm CloudMiu, your personal little helper!\n"
-             f"How can I assist you today?",
+             f"How can I assist you today?😸",
         parse_mode=ParseMode.HTML,
         reply_markup=get_on_start_kb(),
     )
