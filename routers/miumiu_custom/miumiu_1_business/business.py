@@ -374,7 +374,8 @@ async def process_amount(message: Message, state: FSMContext):
         return
 
     keyboard_markup = ReplyKeyboardMarkup(
-        resize_keyboard=True, keyboard=[
+        resize_keyboard=True,
+        keyboard=[
             [KeyboardButton(text='USD/EUR'), KeyboardButton(text='EUR/USD'), KeyboardButton(text='USD/GBP')],
             [KeyboardButton(text='USD/RUB'), KeyboardButton(text='EUR/RUB'), KeyboardButton(text='HUF/RUB')],
             [KeyboardButton(text='RSD/RUB'), KeyboardButton(text='AMD/RUB'), KeyboardButton(text='CNY/RUB')],
