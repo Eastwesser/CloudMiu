@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from keyboards.on_start import ButtonText
 
 bot_token = os.getenv('BOT_TOKEN')
-forecast_api = os.getenv('WEATHER_API_TOKEN')
+
 load_dotenv()
 
 bot = Bot(token=bot_token)
