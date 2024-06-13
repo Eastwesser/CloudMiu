@@ -8,12 +8,21 @@ from io import BytesIO
 
 import aiohttp
 import requests
-from aiogram import Bot, types, Dispatcher, F
+from aiogram import (
+    Bot,
+    types,
+    Dispatcher,
+    F,
+)
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import FSInputFile, BufferedInputFile, ReplyKeyboardRemove
+from aiogram.types import (
+    FSInputFile,
+    BufferedInputFile,
+    ReplyKeyboardRemove,
+)
 from aiogram.types import InputFile
 from aiogram.types import Message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton

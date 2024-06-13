@@ -15,8 +15,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (
-    ReplyKeyboardMarkup, KeyboardButton,
-    Message, ReplyKeyboardRemove
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    Message,
+    ReplyKeyboardRemove,
 )
 from dotenv import load_dotenv
 
