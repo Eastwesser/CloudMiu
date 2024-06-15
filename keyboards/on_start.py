@@ -12,7 +12,7 @@ class ButtonText:
     BYE = "Goodbye!"
     WEATHER = "Weather"
     YANDEX_GPT = "YandexGPT"
-    KADINSKY = "Kadinsky"
+    KANDINSKY = "Kandinsky"
     CURRENCY = "Currency"
     CALCULATOR = "Calculator"
     CONVERTER = "Converter"
@@ -67,8 +67,8 @@ def get_on_help_kb() -> ReplyKeyboardMarkup:
     button_yandex_gpt = KeyboardButton(
         text=ButtonText.YANDEX_GPT
     )
-    button_kadinsky = KeyboardButton(
-        text=ButtonText.KADINSKY
+    button_kandinsky = KeyboardButton(
+        text=ButtonText.KANDINSKY
     )
 
     button_currency = KeyboardButton(
@@ -101,7 +101,7 @@ def get_on_help_kb() -> ReplyKeyboardMarkup:
         text=ButtonText.GAMES
     )
 
-    buttons_row_1 = [button_weather, button_yandex_gpt, button_kadinsky]
+    buttons_row_1 = [button_weather, button_yandex_gpt, button_kandinsky]
     buttons_row_2 = [button_currency, button_calculator, button_converter]
     buttons_row_3 = [button_magnetic_storm, button_python_presentation, button_video_to_mp3]
     buttons_row_4 = [button_memes, button_stickers, button_games]
