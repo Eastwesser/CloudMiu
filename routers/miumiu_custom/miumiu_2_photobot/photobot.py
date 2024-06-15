@@ -71,7 +71,7 @@ class AIfilters(StatesGroup):
 
 # MEME BOX =============================================================================================================
 
-MEME_COUNT = 30
+MEME_COUNT = 35
 
 
 @router.message(F.text == ButtonText.MEMES)
@@ -501,7 +501,7 @@ class Text2ImageAPI:
             time.sleep(delay)
 
 
-@router.message(F.text == ButtonText.KADINSKY)
+@router.message(F.text == ButtonText.KANDINSKY)
 async def handle_kandinskiy_message(message: types.Message):
     await message.answer(
         text="Meow! If you want draw with me,\n"
