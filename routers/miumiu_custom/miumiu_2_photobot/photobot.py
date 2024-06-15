@@ -426,13 +426,13 @@ async def start_video(message: Message, state: FSMContext):
     await message.answer("Send me a video (30 seconds maximum).")
 
 
-# KADINSKIY ============================================================================================================
-class KadinskyStates(StatesGroup):
+# KANDINSKIY ===========================================================================================================
+class KandinskyStates(StatesGroup):
     Intro = State()
     TextToImage = State()
 
 
-class ButtonTextKadinsky:
+class ButtonTextKandinsky:
     TEXT_TO_IMAGE = "Text to image"
 
 
@@ -502,16 +502,16 @@ class Text2ImageAPI:
 
 
 @router.message(F.text == ButtonText.KADINSKY)
-async def handle_kadinskiy_message(message: types.Message):
+async def handle_kandinskiy_message(message: types.Message):
     await message.answer(
         text="Meow! If you want draw with me,\n"
-             "click /start_kadinsky any time! :3",
+             "click /start_kandinsky any time! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
 
 
-@router.message(Command("start_kadinsky", prefix="!/"))
+@router.message(Command("start_kandinsky", prefix="!/"))
 async def start(message: types.Message):
     await message.answer(
         "Welcome to the Kandinsky bot! Please, press on the button 'Text to Image' ^w^\n"
@@ -521,17 +521,17 @@ async def start(message: types.Message):
     )
 
 
-@router.message(F.text == ButtonTextKadinsky.TEXT_TO_IMAGE)
+@router.message(F.text == ButtonTextKandinsky.TEXT_TO_IMAGE)
 async def handle_text_to_image(message: Message, state: FSMContext):
-    await state.set_state(KadinskyStates.Intro)
+    await state.set_state(KandinskyStates.Intro)
     await message.answer("Please enter the text you want to generate an image for.\n"
                          "It may take some time, almost 30 seconds, so be patient UwU")
-    await state.set_state(KadinskyStates.TextToImage)
+    await state.set_state(KandinskyStates.TextToImage)
 
 
-@router.message(KadinskyStates.TextToImage)
+@router.message(KandinskyStates.TextToImage)
 async def process_text_for_image(message: types.Message, state: FSMContext):
-    await state.set_state(KadinskyStates.TextToImage)
+    await state.set_state(KandinskyStates.TextToImage)
     text = message.text
     api = Text2ImageAPI(
         "https://api-key.fusionbrain.ai/",

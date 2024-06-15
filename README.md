@@ -26,7 +26,7 @@ courtesy of OpenWeatherAPI. You can get weather updates for any city on the plan
 9. **CNY to RUB**: Convert from Chinese Yuan (CNY) to Russian Ruble (RUB)
 10. **JPY to RUB**: Convert from Japanese Yen (JPY) to Russian Ruble (RUB)
 
-**Art with Kadinsky**: Convert text into images with Kadinsky. You may draw any picture you like, 
+**Art with Kandinsky**: Convert text into images with Kandinsky. You may draw any picture you like, 
 except violent or restricted ones.
 
 **Video to MP3 converter**: You can send your up to 30 seconds video to get the audiofile from it.
