@@ -38,7 +38,7 @@ async def handle_start(message: types.Message):
 @router.message(Command("help", prefix="!/"))
 async def handle_help(message: types.Message):
     text = markdown.text(
-        markdown.markdown_decoration.quote("I'm MiuMiu, your personal little helper!"),
+        markdown.markdown_decoration.quote("Let's see what we can do!"),
         markdown.text(
             "Send me",
             markdown.markdown_decoration.bold(

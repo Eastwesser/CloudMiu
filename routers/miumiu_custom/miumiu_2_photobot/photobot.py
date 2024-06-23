@@ -71,7 +71,7 @@ class AIfilters(StatesGroup):
 
 # MEME BOX =============================================================================================================
 
-MEME_COUNT = 35
+MEME_COUNT = 37
 
 
 @router.message(F.text == ButtonText.MEMES)
