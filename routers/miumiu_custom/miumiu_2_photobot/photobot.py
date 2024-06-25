@@ -1,5 +1,7 @@
+import asyncio
 import base64
 import json
+import logging
 import os
 import random
 import tempfile
@@ -42,6 +44,9 @@ bot = Bot(token=bot_token)
 dp = Dispatcher()
 
 router = Router(name=__name__)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class InputFileBytes(InputFile):
