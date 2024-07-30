@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import psutil
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -15,6 +16,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def log_memory_usage():
+    process = psutil.Process()
+    mem_info = process.memory_info()
+    logger.info(f'Memory usage: {mem_info.rss / (1024 * 1024):.2f} MB')  # Resident Set Size
+
+
 async def main():
     dp = Dispatcher()
     dp.include_router(main_router)
@@ -22,12 +29,17 @@ async def main():
         token=settings.bot_token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
+
+    log_memory_usage()  # Log memory usage before starting polling
     await dp.start_polling(bot)
+    log_memory_usage()  # Log memory usage after polling stops
 
 
 if __name__ == '__main__':
     try:
         logger.info('Starting the bot...')
+        log_memory_usage()  # Log memory usage at the start
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info('Bot stopped by keyboard interrupt.')
+        log_memory_usage()  # Log memory usage when stopping the bot
