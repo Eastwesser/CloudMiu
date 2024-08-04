@@ -260,7 +260,6 @@ async def handle_magnetic_storm_message(message: types.Message):
 
 @router.message(Command("magnetic_storm", prefix="!/"))
 async def get_magnetic_storm_command(message: types.Message):
-    # Pass the nasa_api token here
     await get_magnetic_storm_data(message, nasa_api)
 
 
