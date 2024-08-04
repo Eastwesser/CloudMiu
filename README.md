@@ -79,6 +79,20 @@ typing_extensions==4.11.0
 urllib3==2.2.1
 yarl==1.9.4
 ```
+## .env Sample
+For tokens and other data use .env:
+
+```commandline
+BOT_TOKEN=your_telegram_bot_token
+WEATHER_API_TOKEN=your_weather_api_token
+NASA_API_TOKEN=your_nasa_api_token
+OPEN_EXCHANGE_TOKEN=your_open_exchange_token
+YANDEX_ID_ADMIN=your_yandex_admin_id
+YANDEX_API_KEY=your_yandex_api_token
+FUSION_BRAIN_TOKEN=your_fusion_brain_token
+FB_KEY=your_fusion_brain_key
+```
+
 
 Feel free to interact with MiuMiu and explore its current functionalities.
 Stay tuned for updates and new features as we continue to enhance its capabilities! 🚀
