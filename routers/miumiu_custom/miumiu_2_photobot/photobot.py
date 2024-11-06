@@ -25,7 +25,10 @@ from aiogram.types import (
 )
 from aiogram.types import InputFile
 from aiogram.types import Message
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+)
 from dotenv import load_dotenv
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
