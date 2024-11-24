@@ -32,7 +32,7 @@ async def handle_emoji_message(message: types.Message):
 @router.message(F.text == ButtonText.BYE)
 async def handle_bye_message(message: types.Message):
     await message.answer(
-        text="See you later! Click /start any time! =)",
+        text="See you later! Click /start any time! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
