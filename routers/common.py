@@ -58,4 +58,4 @@ async def echo_message(message: types.Message):
         await message.copy_to(chat_id=message.chat.id)
 
     except TypeError:
-        await message.reply(text="Something new 🙂")
+        await message.reply(text="Something new!!! Thanks 🙂")
