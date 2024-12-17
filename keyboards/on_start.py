@@ -218,5 +218,5 @@ def build_yes_or_no_keyboard() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
     builder.button(text="Yes")
     builder.button(text="No")
-    # builder.adjust(5)
+    # builder.adjust(6)
     return builder.as_markup(resize_keyboard=True)
