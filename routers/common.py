@@ -45,7 +45,7 @@ async def echo_message(message: types.Message):
         await message.forward(chat_id=message.chat.id)
         return
     await message.answer(
-        text="Wait a second...",
+        text="Wait a second! :3",
         parse_mode=None,
     )
 
