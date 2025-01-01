@@ -537,7 +537,7 @@ async def process_callback(callback_query: types.CallbackQuery):
     current_cat_index = len(user_choices[user_id])
 
     if correct_sequence[choice_number - 1] == bot_sequence[current_cat_index - 1]:
-        await callback_query.message.answer("Nice choice! Meow :3")
+        await callback_query.message.answer("Wonderful choice! Meow :3")
     else:
         await callback_query.message.answer("Wrong choice! Try again.")
 
