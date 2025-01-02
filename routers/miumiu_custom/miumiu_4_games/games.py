@@ -539,7 +539,7 @@ async def process_callback(callback_query: types.CallbackQuery):
     if correct_sequence[choice_number - 1] == bot_sequence[current_cat_index - 1]:
         await callback_query.message.answer("Wonderful choice! Meow :3")
     else:
-        await callback_query.message.answer("Wrong choice! Try again.")
+        await callback_query.message.answer("Wrong choice! Try again, please.")
 
     if current_cat_index == 5:
         await compare_choices(callback_query)
