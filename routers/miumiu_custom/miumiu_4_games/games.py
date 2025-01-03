@@ -545,4 +545,4 @@ async def process_callback(callback_query: types.CallbackQuery):
         await compare_choices(callback_query)
     else:
 
-        await callback_query.message.answer(f"Now choose Cat {current_cat_index + 1}")
+        await callback_query.message.answer(f"Now choose the Cat {current_cat_index + 1}")
