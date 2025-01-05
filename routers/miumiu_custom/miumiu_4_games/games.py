@@ -513,7 +513,7 @@ async def play_five_cats(message: types.Message):
     ]
     inline_kb = InlineKeyboardMarkup(inline_keyboard=five_cats_buttons)
 
-    await message.answer("Now choose the correct order!", reply_markup=inline_kb)
+    await message.answer("Now choose the correct cat order!", reply_markup=inline_kb)
 
 
 async def compare_choices(callback_query: types.CallbackQuery):
