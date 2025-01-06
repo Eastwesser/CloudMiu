@@ -16,7 +16,7 @@ async def handle_photo_wo_caption(message: types.Message):
 
 @router.message(F.photo, F.caption.contains("please"))
 async def handle_photo_with_please_caption(message: types.Message):
-    await message.reply("Don't beg me. I can't see, sorry... :C")
+    await message.reply("Don't beg me. I can't see, sorry :C")
 
 
 @router.message(any_media_filter, ~F.caption)
