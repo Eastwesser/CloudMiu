@@ -85,7 +85,7 @@ city_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
 async def handle_weather_message(message: types.Message):
     await message.answer(
         text="Meow! If you want to ask me about the weather,\n"
-             "click /weather_start any time! :3",
+             "click /weather_start any time! Meow~ :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
