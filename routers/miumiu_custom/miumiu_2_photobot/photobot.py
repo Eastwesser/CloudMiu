@@ -81,7 +81,7 @@ MEME_COUNT = 37
 async def handle_memes_message(message: types.Message):
     await message.answer(
         text="Meow! If you want get some memes,\n"
-             "click /memes any time! I have 30 of them! :3",
+             "click /memes any time! I have 37 of them! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
     )
