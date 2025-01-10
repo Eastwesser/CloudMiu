@@ -100,7 +100,7 @@ async def give_random_meme(message: types.Message):
     file_path = os.path.join(folder_path, random_meme)
 
     photo = FSInputFile(file_path)
-    await message.reply_photo(photo, caption="Here you are")
+    await message.reply_photo(photo, caption="Here you are ^w^")
 
 
 @router.message(Command("actions", prefix="!/"))
