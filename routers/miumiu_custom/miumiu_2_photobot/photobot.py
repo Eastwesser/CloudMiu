@@ -136,7 +136,7 @@ async def send_sticker(chat_id, sticker_id):
 @router.message(F.text == ButtonText.STICKERS)
 async def handle_stickers_message(message: types.Message):
     await message.answer(
-        text="Meow! If you want to get some stickers,\n"
+        text="Meow! If you want to get some cool stickers,\n"
              "click /sticker_kb any time! :3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
