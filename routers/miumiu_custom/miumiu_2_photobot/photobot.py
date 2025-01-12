@@ -416,7 +416,7 @@ async def handle_video(message: Message, state: FSMContext):
 @router.message(F.text == ButtonText.VIDEO_TO_MP3)
 async def handle_vid_to_mp3_message(message: types.Message):
     await message.answer(
-        text="Meow! If you want to get the mp3 file from video,\n"
+        text="Meow! If you want to get the mp3 file from your video,\n"
              "click /video_to_mp3 any time! 30 seconds max! ;3",
         reply_markup=ReplyKeyboardRemove(),
         one_time_keyboard=True
