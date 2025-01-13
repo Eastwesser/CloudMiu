@@ -426,7 +426,7 @@ async def handle_vid_to_mp3_message(message: types.Message):
 @router.message(Command("video_to_mp3", prefix="!/"))
 async def start_video(message: Message, state: FSMContext):
     await state.set_state(VideoMaster.WaitingForVideo)
-    await message.answer("Send me a video (30 seconds maximum).")
+    await message.answer("Send me a video (30 seconds max).")
 
 
 # KANDINSKIY ===========================================================================================================
