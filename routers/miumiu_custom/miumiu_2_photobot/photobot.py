@@ -534,7 +534,7 @@ async def start(message: types.Message):
 async def handle_text_to_image(message: Message, state: FSMContext):
     await state.set_state(KandinskyStates.Intro)
     await message.answer("Please enter the text you want to generate an image for.\n"
-                         "It may take some time, almost 30 seconds, so be patient UwU")
+                         "It may take some time, almost 30-40 seconds, so be patient UwU")
     await state.set_state(KandinskyStates.TextToImage)
 
 
