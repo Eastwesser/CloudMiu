@@ -565,8 +565,8 @@ async def process_text_for_image(message: types.Message, state: FSMContext):
             await message.answer_photo(buffered_input_file)
 
         else:
-            await message.answer("Error generating image. Please try again later.")
+            await message.answer("Error generating image. Please try again later, sorry TwT")
     else:
-        await message.answer("Error fetching model ID. Please try again later.")
+        await message.answer("Error fetching model ID. Please try again later, sorry TwT")
 
     await state.clear()
