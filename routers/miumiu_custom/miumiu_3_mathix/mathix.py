@@ -99,7 +99,7 @@ async def process_operation(message: types.Message, operator: str):
         num1 = float(num1)
         num2 = float(num2)
     except ValueError:
-        await message.reply("Invalid input. Please provide two numbers.")
+        await message.reply("Invalid input. Please provide two numbers UwU")
         return
 
     result = None
