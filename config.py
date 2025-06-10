@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     )
 
     bot_token: str = os.getenv('BOT_TOKEN')
+    webhook_host: str = os.getenv('WEBHOOK_HOST')
+    webhook_path: str = os.getenv('WEBHOOK_PATH')
+    webhook_url: str = os.getenv('WEBHOOK_URL')
     weather_api_token: str = os.getenv('WEATHER_API_TOKEN')
     nasa_api_token: str = os.getenv('NASA_API_TOKEN')
     open_exchange_token: str = os.getenv('OPEN_EXCHANGE_TOKEN')

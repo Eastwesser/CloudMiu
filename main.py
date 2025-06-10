@@ -1,45 +1,48 @@
-import asyncio
 import logging
-import psutil
+
+from fastapi import FastAPI
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 from config import settings
-from routers import router as main_router
+from routers import router as main_router  # твои хендлеры
 
+# Настройка логов
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+# Инициализация бота и диспетчера
+bot = Bot(
+    token=settings.bot_token,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 
-def log_memory_usage():
-    process = psutil.Process()
-    mem_info = process.memory_info()
-    logger.info(f'Memory usage: {mem_info.rss / (1024 * 1024):.2f} MB')
+dp = Dispatcher(storage=MemoryStorage())
+dp.include_router(main_router)
 
-
-async def main():
-    dp = Dispatcher()
-    dp.include_router(main_router)
-    bot = Bot(
-        token=settings.bot_token,
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-    )
-
-    log_memory_usage()
-    await dp.start_polling(bot)
-    log_memory_usage()
+# Инициализация FastAPI
+app = FastAPI()
 
 
-if __name__ == '__main__':
-    try:
-        logger.info('Starting the bot...')
-        log_memory_usage()
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info('Bot stopped by keyboard interrupt.')
-        log_memory_usage()
+@app.on_event("startup")
+async def on_startup():
+    await bot.set_webhook(settings.webhook_url)
+    logger.info(f"✅ Webhook установлен: {settings.webhook_url}")
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    await bot.delete_webhook()
+    logger.info("🛑 Webhook удалён")
+
+
+# Привязка aiogram к FastAPI
+SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=settings.webhook_path)
+setup_application(app, dp, bot=bot)
