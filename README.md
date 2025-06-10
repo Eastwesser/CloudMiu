@@ -96,3 +96,26 @@ FB_KEY=your_fusion_brain_key
 
 Feel free to interact with MiuMiu and explore its current functionalities.
 Stay tuned for updates and new features as we continue to enhance its capabilities! 🚀
+
+## 📦 Команды для управления
+
+### Построить:
+```bash
+docker compose build
+```
+
+### Запустить:
+```bash
+docker compose up -d
+```
+
+Логи:
+```bash
+docker compose logs -f fastapi
+docker compose logs -f webhook-bot
+```
+
+Остановить:
+```bash
+docker compose down
+```
