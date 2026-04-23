@@ -96,3 +96,5 @@ FB_KEY=your_fusion_brain_key
 
 Feel free to interact with MiuMiu and explore its current functionalities.
 Stay tuned for updates and new features as we continue to enhance its capabilities! 🚀
+
+23.04.2026 - homecoming day (beget (cloud) -> Raspberry Pi3(home))
