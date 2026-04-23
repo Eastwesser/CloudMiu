@@ -439,7 +439,7 @@ class ButtonTextKandinsky:
     TEXT_TO_IMAGE = "Text to image"
 
 
-API_URL = "https://api-key.fusionbrain.ai/"
+API_URL = "https://api.fusionbrain.ai/"
 
 MODELS_ENDPOINT = API_URL + "key/api/v1/models"
 GENERATE_ENDPOINT = API_URL + "key/api/v1/text2image/run"
@@ -469,10 +469,24 @@ class Text2ImageAPI:
             'X-Secret': f'Secret {fusion_brain_key}',
         }
 
+    # def get_model(self):
+    #     response = requests.get(
+    #         self.URL + 'key/api/v1/models', headers=self.AUTH_HEADERS
+    #     )
+    #     data = response.json()
+    #     return data[0]['id']
+
     def get_model(self):
         response = requests.get(
             self.URL + 'key/api/v1/models', headers=self.AUTH_HEADERS
         )
+        print(f"[DEBUG] Status: {response.status_code}")
+        print(f"[DEBUG] Headers: {response.headers}")
+        print(f"[DEBUG] Text: {response.text[:500]}")
+
+        if response.status_code != 200:
+            raise Exception(f"API error {response.status_code}: {response.text}")
+
         data = response.json()
         return data[0]['id']
 
@@ -542,31 +556,36 @@ async def handle_text_to_image(message: Message, state: FSMContext):
 async def process_text_for_image(message: types.Message, state: FSMContext):
     await state.set_state(KandinskyStates.TextToImage)
     text = message.text
-    api = Text2ImageAPI(
-        "https://api-key.fusionbrain.ai/",
-        f"{fusion_brain_token}",
-        f"{fusion_brain_key}"
-    )
-    model_id = api.get_model()
-    if model_id:
-        print(f"Model ID: {model_id}")
-        uuid = api.generate(text, model_id)
-        print(f"Image UUID: {uuid}")
-        images = api.check_generation(uuid)
 
-        if images:
-            print(f"Images: {images}")
-
-            image_base64 = images[0]
-            image_data = base64.b64decode(image_base64)
-
-            buffered_input_file = types.input_file.BufferedInputFile(file=image_data, filename="image.jpg")
-
-            await message.answer_photo(buffered_input_file)
-
-        else:
-            await message.answer("Error generating image. Please try again later, sorry TwT")
-    else:
-        await message.answer("Error fetching model ID. Please try again later, sorry TwT")
-
-    await state.clear()
+    await message.answer("😿 Meow... The drawing service is temporarily unavailable.\n"
+                         "Please wait for future updates! I'll learn to draw again soon.")
+    return
+    #
+    # api = Text2ImageAPI(
+    #     "https://api.fusionbrain.ai/",
+    #     f"{fusion_brain_token}",
+    #     f"{fusion_brain_key}"
+    # )
+    # model_id = api.get_model()
+    # if model_id:
+    #     print(f"Model ID: {model_id}")
+    #     uuid = api.generate(text, model_id)
+    #     print(f"Image UUID: {uuid}")
+    #     images = api.check_generation(uuid)
+    #
+    #     if images:
+    #         print(f"Images: {images}")
+    #
+    #         image_base64 = images[0]
+    #         image_data = base64.b64decode(image_base64)
+    #
+    #         buffered_input_file = types.input_file.BufferedInputFile(file=image_data, filename="image.jpg")
+    #
+    #         await message.answer_photo(buffered_input_file)
+    #
+    #     else:
+    #         await message.answer("Error generating image. Please try again later, sorry TwT")
+    # else:
+    #     await message.answer("Error fetching model ID. Please try again later, sorry TwT")
+    #
+    # await state.clear()
