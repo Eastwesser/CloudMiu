@@ -1,0 +1,1 @@
+# TODO: add docker-compose (network_mode=bridge instead of host)

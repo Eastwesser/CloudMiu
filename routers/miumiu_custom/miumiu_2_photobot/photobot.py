@@ -1,10 +1,7 @@
-import base64
 import json
 import os
 import random
-import tempfile
 import time
-from io import BytesIO
 
 import aiohttp
 import requests
@@ -20,7 +17,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import (
     FSInputFile,
-    BufferedInputFile,
     ReplyKeyboardRemove,
 )
 from aiogram.types import InputFile
@@ -30,10 +26,11 @@ from aiogram.types import (
     KeyboardButton,
 )
 from dotenv import load_dotenv
-from moviepy.video.io.VideoFileClip import VideoFileClip
 
 from keyboards.inline_keyboards.actions_kb import build_actions_kb
 from keyboards.on_start import ButtonText
+
+# from moviepy.video.io.VideoFileClip import VideoFileClip
 
 bot_token = os.getenv('BOT_TOKEN')
 fusion_brain_token = os.getenv('FUSION_BRAIN_TOKEN')
@@ -376,58 +373,60 @@ async def send_presentation(message: types.Message):
     await message.answer_document(types.FSInputFile(presentation_path, presentations[0]))
 
 
-# VIDEO TO MP3 CONVERTER ===============================================================================================
-class VideoMaster(StatesGroup):
-    WaitingForVideo = State()
-
-
-@router.message(F.video)
-async def handle_video(message: Message, state: FSMContext):
-    await state.set_state(VideoMaster.WaitingForVideo)
-    if message.video.duration <= 30:
-        video_file = await message.bot.get_file(message.video.file_id)
-
-        input_video_stream = BytesIO()
-        await message.bot.download_file(video_file.file_path, destination=input_video_stream)
-
-        with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_video_file:
-            temp_video_file.write(input_video_stream.getvalue())
-            temp_video_file_path = temp_video_file.name
-
-        video = VideoFileClip(temp_video_file_path)
-        temp_audio_file_path = temp_video_file_path.replace(".mp4", ".mp3")
-        video.audio.write_audiofile(temp_audio_file_path)
-        video.close()
-
-        with open(temp_audio_file_path, "rb") as audio_file:
-            audio_bytes = audio_file.read()
-            audio = BufferedInputFile(audio_bytes, filename="audio.mp3")
-            await message.reply_document(audio)
-            # await message.reply_voice(audio)  # for voice messages
-
-        os.unlink(temp_video_file_path)
-        os.unlink(temp_audio_file_path)
-
-        await state.clear()
-    else:
-        await message.answer("Sorry, the video duration exceeds the limit of 30 seconds.")
-
-
-@router.message(F.text == ButtonText.VIDEO_TO_MP3)
-async def handle_vid_to_mp3_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to get the mp3 file from your video,\n"
-             "click /video_to_mp3 any time! 30 seconds max! ;3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
-@router.message(Command("video_to_mp3", prefix="!/"))
-async def start_video(message: Message, state: FSMContext):
-    await state.set_state(VideoMaster.WaitingForVideo)
-    await message.answer("Send me a video (30 sec max).")
-
+#
+#
+# # VIDEO TO MP3 CONVERTER ===============================================================================================
+# class VideoMaster(StatesGroup):
+#     WaitingForVideo = State()
+#
+#
+# @router.message(F.video)
+# async def handle_video(message: Message, state: FSMContext):
+#     await state.set_state(VideoMaster.WaitingForVideo)
+#     if message.video.duration <= 30:
+#         video_file = await message.bot.get_file(message.video.file_id)
+#
+#         input_video_stream = BytesIO()
+#         await message.bot.download_file(video_file.file_path, destination=input_video_stream)
+#
+#         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_video_file:
+#             temp_video_file.write(input_video_stream.getvalue())
+#             temp_video_file_path = temp_video_file.name
+#
+#         video = VideoFileClip(temp_video_file_path)
+#         temp_audio_file_path = temp_video_file_path.replace(".mp4", ".mp3")
+#         video.audio.write_audiofile(temp_audio_file_path)
+#         video.close()
+#
+#         with open(temp_audio_file_path, "rb") as audio_file:
+#             audio_bytes = audio_file.read()
+#             audio = BufferedInputFile(audio_bytes, filename="audio.mp3")
+#             await message.reply_document(audio)
+#             # await message.reply_voice(audio)  # for voice messages
+#
+#         os.unlink(temp_video_file_path)
+#         os.unlink(temp_audio_file_path)
+#
+#         await state.clear()
+#     else:
+#         await message.answer("Sorry, the video duration exceeds the limit of 30 seconds.")
+#
+#
+# @router.message(F.text == ButtonText.VIDEO_TO_MP3)
+# async def handle_vid_to_mp3_message(message: types.Message):
+#     await message.answer(
+#         text="Meow! If you want to get the mp3 file from your video,\n"
+#              "click /video_to_mp3 any time! 30 seconds max! ;3",
+#         reply_markup=ReplyKeyboardRemove(),
+#         one_time_keyboard=True
+#     )
+#
+#
+# @router.message(Command("video_to_mp3", prefix="!/"))
+# async def start_video(message: Message, state: FSMContext):
+#     await state.set_state(VideoMaster.WaitingForVideo)
+#     await message.answer("Send me a video (30 sec max).")
+#
 
 # KANDINSKIY ===========================================================================================================
 class KandinskyStates(StatesGroup):

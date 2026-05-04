@@ -16,14 +16,8 @@ h11==0.14.0
 httpcore==1.0.5
 httpx==0.27.0
 idna==3.7
-imageio==2.34.1
-imageio-ffmpeg==0.4.9
 magic-filter==1.0.12
-moviepy==1.0.3
 multidict==6.0.5
-numpy==2.2.6
-pillow==11.2.1
-proglog==0.1.10
 psutil==7.2.2
 pydantic==2.7.1
 pydantic-settings==2.2.1
