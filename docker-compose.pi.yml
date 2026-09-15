@@ -1,0 +1,14 @@
+# Reference for Raspberry Pi 3B+ (copy-paste equivalent of docker run).
+# Use --network host so WireGuard on the Pi is the bot's route.
+# Do not start this while cloudmiu is still polling the same BOT_TOKEN.
+
+services:
+  miumiu:
+    image: eastwesser/home_arm_miumiu2:latest
+    container_name: cloudmiu2
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      BOT_MODE: polling
+    volumes:
+      - /home/pi/Desktop/home_miumiu/.env:/app/.env:ro

@@ -34,7 +34,6 @@ async def handle_bye_message(message: types.Message):
     await message.answer(
         text="See you later! Click /start any time! :3",
         reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
     )
 
 

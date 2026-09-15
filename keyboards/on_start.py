@@ -10,9 +10,14 @@ class ButtonText:
     HELLO = "Hello!"
     WHATS_NEXT = "What's next?"
     BYE = "Goodbye!"
+    BACK = "⬅️ Back"
+    MAIN_MENU = "🏠 Main menu"
+    BACK_TO_GAMES = "⬅️ Games"
     WEATHER = "Weather"
     YANDEX_GPT = "YandexGPT"
-    KANDINSKY = "Kandinsky"
+    ALICE = "Alice"  # same chat as YandexGPT (user-facing name)
+    DRAWER = "Drawer"
+    KANDINSKY = "Kandinsky"  # legacy label; still accepted by drawer router
     CURRENCY = "Currency"
     CALCULATOR = "Calculator"
     CONVERTER = "Converter"
@@ -36,150 +41,87 @@ class ButtonText:
     BOWLING = "Bowling"
 
 
+def _back_row(*texts: str) -> list[KeyboardButton]:
+    return [KeyboardButton(text=t) for t in texts]
+
+
 def get_on_start_kb() -> ReplyKeyboardMarkup:
-    button_hello = KeyboardButton(
-        text=ButtonText.HELLO
-    )
-    button_help = KeyboardButton(
-        text=ButtonText.WHATS_NEXT
-    )
-    button_bye = KeyboardButton(
-        text=ButtonText.BYE
-    )
-
-    buttons_row_1 = [button_hello, button_help]
-    buttons_row_2 = [button_bye]
-
-    markup_keyboard = ReplyKeyboardMarkup(
+    return ReplyKeyboardMarkup(
         keyboard=[
-            buttons_row_1,
-            buttons_row_2,
+            [
+                KeyboardButton(text=ButtonText.HELLO),
+                KeyboardButton(text=ButtonText.WHATS_NEXT),
+            ],
+            [KeyboardButton(text=ButtonText.BYE)],
         ],
         resize_keyboard=True,
     )
-    return markup_keyboard
 
 
 def get_on_help_kb() -> ReplyKeyboardMarkup:
-    button_weather = KeyboardButton(
-        text=ButtonText.WEATHER
-    )
-    button_yandex_gpt = KeyboardButton(
-        text=ButtonText.YANDEX_GPT
-    )
-    button_kandinsky = KeyboardButton(
-        text=ButtonText.KANDINSKY
-    )
-
-    button_currency = KeyboardButton(
-        text=ButtonText.CURRENCY
-    )
-    button_calculator = KeyboardButton(
-        text=ButtonText.CALCULATOR
-    )
-    button_converter = KeyboardButton(
-        text=ButtonText.CONVERTER
-    )
-
-    button_magnetic_storm = KeyboardButton(
-        text=ButtonText.MAGNETIC_STORM
-    )
-    button_python_presentation = KeyboardButton(
-        text=ButtonText.PYTHON_PRESENTATION
-    )
-    button_video_to_mp3 = KeyboardButton(
-        text=ButtonText.VIDEO_TO_MP3
-    )
-
-    button_memes = KeyboardButton(
-        text=ButtonText.MEMES
-    )
-    button_stickers = KeyboardButton(
-        text=ButtonText.STICKERS
-    )
-    button_games = KeyboardButton(
-        text=ButtonText.GAMES
-    )
-
-    buttons_row_1 = [button_weather, button_yandex_gpt, button_kandinsky]
-    buttons_row_2 = [button_currency, button_calculator, button_converter]
-    buttons_row_3 = [button_magnetic_storm, button_python_presentation, button_video_to_mp3]
-    buttons_row_4 = [button_memes, button_stickers, button_games]
-
-    markup_keyboard = ReplyKeyboardMarkup(
+    return ReplyKeyboardMarkup(
         keyboard=[
-            buttons_row_1,
-            buttons_row_2,
-            buttons_row_3,
-            buttons_row_4,
+            [
+                KeyboardButton(text=ButtonText.WEATHER),
+                KeyboardButton(text=ButtonText.ALICE),
+                KeyboardButton(text=ButtonText.DRAWER),
+            ],
+            [
+                KeyboardButton(text=ButtonText.CURRENCY),
+                KeyboardButton(text=ButtonText.CALCULATOR),
+                KeyboardButton(text=ButtonText.CONVERTER),
+            ],
+            [
+                KeyboardButton(text=ButtonText.MAGNETIC_STORM),
+                KeyboardButton(text=ButtonText.PYTHON_PRESENTATION),
+            ],
+            [
+                KeyboardButton(text=ButtonText.MEMES),
+                KeyboardButton(text=ButtonText.STICKERS),
+                KeyboardButton(text=ButtonText.GAMES),
+            ],
+            _back_row(ButtonText.MAIN_MENU),
         ],
         resize_keyboard=True,
     )
-    return markup_keyboard
 
 
 def get_games_kb() -> ReplyKeyboardMarkup:
-    button_rps = KeyboardButton(
-        text=ButtonText.RPS
-    )
-    button_blackjack = KeyboardButton(
-        text=ButtonText.BLACKJACK
-    )
-    button_blockme = KeyboardButton(
-        text=ButtonText.BLOCK_ME
-    )
-
-    button_battleship = KeyboardButton(
-        text=ButtonText.BATTLESHIP
-    )
-    button_five_cats = KeyboardButton(
-        text=ButtonText.FIVE_CATS
-    )
-    button_emoji = KeyboardButton(
-        text=ButtonText.EMOJI
-    )
-
-    buttons_row_1 = [button_rps, button_blackjack, button_blockme]
-    buttons_row_2 = [button_battleship, button_five_cats, button_emoji]
-
-    markup_keyboard = ReplyKeyboardMarkup(
-        keyboard=[buttons_row_1,
-                  buttons_row_2],
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text=ButtonText.RPS),
+                KeyboardButton(text=ButtonText.BLACKJACK),
+                KeyboardButton(text=ButtonText.BLOCK_ME),
+            ],
+            [
+                KeyboardButton(text=ButtonText.BATTLESHIP),
+                KeyboardButton(text=ButtonText.FIVE_CATS),
+                KeyboardButton(text=ButtonText.EMOJI),
+            ],
+            _back_row(ButtonText.BACK),
+        ],
         resize_keyboard=True,
     )
-    return markup_keyboard
 
 
 def get_games_emoji_kb() -> ReplyKeyboardMarkup:
-    button_dice = KeyboardButton(
-        text=ButtonText.DICE
-    )
-    button_darts = KeyboardButton(
-        text=ButtonText.DART
-    )
-    button_casino = KeyboardButton(
-        text=ButtonText.CASINO
-    )
-
-    button_football = KeyboardButton(
-        text=ButtonText.FOOTBALL
-    )
-    button_basketball = KeyboardButton(
-        text=ButtonText.BASKETBALL
-    )
-    button_bowling = KeyboardButton(
-        text=ButtonText.BOWLING
-    )
-
-    buttons_row_1 = [button_dice, button_darts, button_casino]
-    buttons_row_2 = [button_football, button_basketball, button_bowling]
-
-    markup_keyboard = ReplyKeyboardMarkup(
-        keyboard=[buttons_row_1,
-                  buttons_row_2],
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text=ButtonText.DICE),
+                KeyboardButton(text=ButtonText.DART),
+                KeyboardButton(text=ButtonText.CASINO),
+            ],
+            [
+                KeyboardButton(text=ButtonText.FOOTBALL),
+                KeyboardButton(text=ButtonText.BASKETBALL),
+                KeyboardButton(text=ButtonText.BOWLING),
+            ],
+            _back_row(ButtonText.BACK_TO_GAMES, ButtonText.BACK),
+        ],
         resize_keyboard=True,
     )
-    return markup_keyboard
 
 
 def get_actions_kb() -> ReplyKeyboardMarkup:
@@ -204,9 +146,8 @@ def get_actions_kb() -> ReplyKeyboardMarkup:
         text="❔ Regular Quiz",
         request_poll=KeyboardButtonPollType(type="regular"),
     )
-    builder.button(
-        text=ButtonText.BYE,
-    )
+    builder.button(text=ButtonText.BACK)
+    builder.button(text=ButtonText.BYE)
     builder.adjust(1)
     return builder.as_markup(
         input_field_placeholder="Actions:",
@@ -218,5 +159,6 @@ def build_yes_or_no_keyboard() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
     builder.button(text="Yes")
     builder.button(text="No")
-    builder.adjust(12)
+    builder.button(text=ButtonText.BACK)
+    builder.adjust(2)
     return builder.as_markup(resize_keyboard=True)

@@ -1,0 +1,20 @@
+services:
+  miumiu:
+    build: .
+    image: miumiu-2.0:latest
+    container_name: miumiu-2.0
+    env_file:
+      - .env
+    environment:
+      # Force polling in compose unless you override
+      BOT_MODE: ${BOT_MODE:-polling}
+    restart: unless-stopped
+    # Webhook only: uncomment and set BOT_MODE=webhook + WEBHOOK_* in .env
+    # ports:
+    #   - "${WEBHOOK_PORT:-8080}:8080"
+    networks:
+      - miumiu_net
+
+networks:
+  miumiu_net:
+    driver: bridge

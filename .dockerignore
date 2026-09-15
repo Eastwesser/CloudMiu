@@ -1,0 +1,15 @@
+.env
+.env.example
+.venv
+.venv-linux
+.venv-test
+.venv/
+**/__pycache__/
+**/*.pyc
+.git
+.gitignore
+.pytest_cache
+.idea
+.vscode
+*.rar
+CloudMiu.png

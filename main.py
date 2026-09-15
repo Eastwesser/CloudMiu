@@ -1,45 +1,55 @@
 import asyncio
 import logging
+from pathlib import Path
+
 import psutil
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-
+from app.runner import run
 from config import settings
-from routers import router as main_router
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 
-def log_memory_usage():
+def log_memory_usage() -> None:
     process = psutil.Process()
     mem_info = process.memory_info()
-    logger.info(f'Memory usage: {mem_info.rss / (1024 * 1024):.2f} MB')
+    logger.info("Memory usage: %.2f MB", mem_info.rss / (1024 * 1024))
 
 
-async def main():
-    dp = Dispatcher()
-    dp.include_router(main_router)
-    bot = Bot(
-        token=settings.bot_token,
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-    )
-
-    log_memory_usage()
-    await dp.start_polling(bot)
-    log_memory_usage()
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        logger.info('Starting the bot...')
+        if not settings.bot_token:
+            raise SystemExit(
+                "BOT_TOKEN is missing in .env "
+                f"(expected at {Path(__file__).resolve().parent / '.env'})"
+            )
+        if ":" not in settings.bot_token:
+            raise SystemExit(
+                "BOT_TOKEN looks invalid (expected format: 123456:AA…). "
+                "Get a fresh token from @BotFather → /token or /revoke."
+            )
+        logger.info("Starting MiuMiu (mode=%s)...", settings.bot_mode)
+        logger.info(
+            "Using .env next to config; BOT_TOKEN id prefix=%s…",
+            settings.bot_token.split(":", 1)[0],
+        )
         log_memory_usage()
-        asyncio.run(main())
+        asyncio.run(run())
     except KeyboardInterrupt:
-        logger.info('Bot stopped by keyboard interrupt.')
+        logger.info("Bot stopped by keyboard interrupt.")
         log_memory_usage()
+    except Exception as exc:
+        # aiogram may not be imported at top if token missing — keep soft
+        name = type(exc).__name__
+        if "Unauthorized" in name or "Unauthorized" in str(exc):
+            raise SystemExit(
+                "Telegram rejected BOT_TOKEN (Unauthorized).\n"
+                "Fix: open @BotFather → your bot → API Token → copy into .env "
+                "as BOT_TOKEN=... (no quotes), save, run again.\n"
+                f"Detail: {exc}"
+            ) from exc
+        raise

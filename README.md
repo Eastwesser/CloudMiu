@@ -1,100 +1,168 @@
-# MiuMiu
+# MiuMiu 2.0 (CloudMiuyaka)
 
-MiuMiu, your friendly Telegram bot, has undergone exciting updates, bringing a plethora of new features to enhance your
-chatting experience. Powered by asyncio and aiogram, constantly running in Docker, MiuMiu is now smarter and more 
-versatile than ever before! 😎
+Friendly Telegram bot on **aiogram 3** + asyncio. Runs in Docker or on a Raspberry Pi.
 
 ## Features
 
-**Weather Updates**: Receive real-time weather forecasts with detailed information on timing and atmospheric pressure, 
-courtesy of OpenWeatherAPI. You can get weather updates for any city on the planet.
+**Core pillars:** Alice chat (YandexGPT) · Drawer · Calculator/Converter · Games
 
-**Magnetic Storm Alerts**: Stay informed about magnetic storms using data from NASA tokens.
+**Also:** weather, magnetic storms, currency, memes, stickers.
 
-**Conversation with YandexGPT**: Engage in conversations with YandexGPT for interesting interactions.
+See `confluence/FEATURES.md` for backends and why **not Apify**.
 
-**Currency Conversion**: Convert currency at the current exchange rate. The following currency pairs are supported:
+## Layout
 
-1. **USD to EUR**: Convert from US Dollar (USD) to Euro (EUR)
-2. **EUR to USD**: Convert from Euro (EUR) to US Dollar (USD)
-3. **USD to GBP**: Convert from US Dollar (USD) to British Pound (GBP)
-4. **USD to RUB**: Convert from US Dollar (USD) to Russian Ruble (RUB)
-5. **EUR to RUB**: Convert from Euro (EUR) to Russian Ruble (RUB)
-6. **HUF to RUB**: Convert from Hungarian Forint (HUF) to Russian Ruble (RUB)
-7. **RSD to RUB**: Convert from Serbian Dinar (RSD) to Russian Ruble (RUB)
-8. **AMD to RUB**: Convert from Armenian Dram (AMD) to Russian Ruble (RUB)
-9. **CNY to RUB**: Convert from Chinese Yuan (CNY) to Russian Ruble (RUB)
-10. **JPY to RUB**: Convert from Japanese Yen (JPY) to Russian Ruble (RUB)
-
-**Art with Kandinsky**: Convert text into images with Kandinsky. You may draw any picture you like, 
-except violent or restricted ones.
-
-**Video to MP3 converter**: You can send your up to 30 seconds video to get the audiofile from it.
-
-**Calculator and Metric Conversion**: Perform calculations and convert between metric types 
-(e.g., Fahrenheit to Celsius).
-
-**Games**: Play games such as "Rock, Paper, Scissors", memory games as "Five Cats", BlockMe!, Blackjack, and dice games, 
-along with various emoji-based games.
-
-## Installation
-
-To install the necessary dependencies, here are the required libraries:
-
-```plaintext
-aiofiles==23.2.1
-aiogram==3.5.0
-aiohttp==3.9.5
-aiosignal==1.3.1
-annotated-types==0.6.0
-anyio==4.3.0
-async-timeout==4.0.3
-attrs==23.2.0
-certifi==2024.2.2
-charset-normalizer==3.3.2
-colorama==0.4.6
-decorator==4.4.2
-exceptiongroup==1.2.1
-frozenlist==1.4.1
-h11==0.14.0
-httpcore==1.0.5
-httpx==0.27.0
-idna==3.7
-imageio==2.34.1
-imageio-ffmpeg==0.4.9
-magic-filter==1.0.12
-moviepy==1.0.3
-multidict==6.0.5
-numpy==1.26.4
-proglog==0.1.10
-pydantic==2.7.1
-pydantic-settings==2.2.1
-pydantic_core==2.18.2
-python-dotenv==1.0.1
-pytz==2024.1
-requests==2.31.0
-sniffio==1.3.1
-tqdm==4.66.2
-typing_extensions==4.11.0
-urllib3==2.2.1
-yarl==1.9.4
 ```
-## .env Sample
-For tokens and other data use .env:
-
-```commandline
-BOT_TOKEN=your_telegram_bot_token
-WEATHER_API_TOKEN=your_weather_api_token
-NASA_API_TOKEN=your_nasa_api_token
-OPEN_EXCHANGE_TOKEN=your_open_exchange_token
-YANDEX_ID_ADMIN=your_yandex_admin_id
-YANDEX_API_KEY=your_yandex_api_token
-FUSION_BRAIN_TOKEN=your_fusion_brain_token
-FB_KEY=your_fusion_brain_key
+main.py                 # entry
+config.py               # pydantic settings from .env
+app/runner.py           # polling | webhook lifecycle
+services/leonardo.py    # async Leonardo client
+routers/…/drawer.py     # drawer FSM handlers
+routers/…/photobot.py   # memes / stickers / presentation
 ```
 
+## Bot update mode
 
-Feel free to interact with MiuMiu and explore its current functionalities.
-Stay tuned for updates and new features as we continue to enhance its capabilities! 🚀
+Telegram Bot API does **not** offer a client WebSocket for updates.
 
-23.04.2026 - homecoming day (beget (cloud) -> Raspberry Pi3(home))
+| `BOT_MODE` | When to use |
+|------------|-------------|
+| `polling` (default) | Local / Pi without public HTTPS |
+| `webhook` | Public HTTPS reverse-proxy → `WEBHOOK_PORT` |
+
+Webhook example:
+
+```env
+BOT_MODE=webhook
+WEBHOOK_HOST=https://bot.yourdomain.com
+WEBHOOK_PATH=/telegram/webhook
+WEBHOOK_SECRET=long-random-string
+WEBHOOK_PORT=8080
+```
+
+Point nginx/caddy at `http://127.0.0.1:8080/telegram/webhook`.
+
+## Drawer backends
+
+| `DRAWER_BACKEND` | Meaning |
+|------------------|---------|
+| **`pollinations`** (default) | **Free** Pollinations.AI — no key/card |
+| `fusionbrain` | Kandinsky (RU keys) |
+| `mock` | Offline placeholder |
+| `craiyon` | Only if you host a compatible API |
+| `leonardo` | Paid/credit |
+| `auto` | Pollinations → FusionBrain → … → mock |
+
+See `confluence/FREE_IMAGE_APIS.md`.
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+Covers Leonardo client (mocked HTTP), drawer handlers, config/keyboards, polling vs webhook selection.
+
+## Docker (Windows / Pi)
+
+Need Docker Desktop (Windows) and a filled `.env`.
+
+**PowerShell** (note the `.\` — required):
+
+```powershell
+cd path\to\CloudMiuyaka
+.\make.bat up
+.\make.bat logs
+.\make.bat down
+```
+
+**CMD**:
+
+```bat
+cd path\to\CloudMiuyaka
+make.bat up
+make.bat logs
+```
+
+With GNU make (Git Bash / WSL / Chocolatey):
+
+```bash
+make up
+make logs
+make down
+```
+
+Polling needs no published ports. For webhook later: set `BOT_MODE=webhook` and uncomment `ports` in `docker-compose.yml`.
+
+## Raspberry Pi 3B+ (ARM, Docker Hub)
+
+Do **not** `docker build` on Windows without `--platform linux/arm/v7` — that image will not run on the Pi.
+
+Full steps (buildx push + Pi stop/start, VPN, rollback): **`PI_DEPLOY.md`**.
+
+```powershell
+docker login
+.\make.bat arm-push
+```
+
+On the Pi: `docker stop cloudmiu` then run `cloudmiu2` from `eastwesser/home_arm_miumiu2:latest` with `--network host` and the host `.env`. Never poll the same token twice.
+
+## Local run (Windows, no Docker)
+
+Use **Python 3.10–3.12** already installed (`python --version`). Prefer one folder only (don’t mix an old Desktop `\cloudmiuyaka` venv with a new unzip).
+
+```powershell
+cd path\to\CloudMiuyaka
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+# Edit .env → BOT_TOKEN from @BotFather (fresh token if Unauthorized)
+python main.py
+```
+
+If Activate.ps1 is blocked: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+### Telegram Unauthorized
+
+Bot code is fine if you see `Starting bot in POLLING mode` then `Unauthorized`.
+That means Telegram rejected `BOT_TOKEN` in **this** folder’s `.env`:
+
+1. @BotFather → `/mybots` → bot → API Token → copy
+2. Put in `.env`: `BOT_TOKEN=123456:AA…` (no spaces/quotes)
+3. Save as UTF-8, run `python main.py` again
+
+In Telegram: Help → **Drawer** → prompt / Memes / Alice / Games.
+
+
+## .env sample
+
+```env
+BOT_TOKEN=
+WEATHER_API_TOKEN=
+NASA_API_TOKEN=
+OPEN_EXCHANGE_TOKEN=
+YANDEX_ID_ADMIN=
+YANDEX_API_KEY=
+LEONARDO_API_KEY=
+LEONARDO_MODEL=phoenix-v1.0
+LEONARDO_MODE=FAST
+BOT_MODE=polling
+WEBHOOK_HOST=
+WEBHOOK_PATH=/telegram/webhook
+WEBHOOK_SECRET=
+WEBHOOK_PORT=8080
+```
+
+`FUSION_BRAIN_*` — used when `DRAWER_BACKEND=fusionbrain` or `auto`.
+
+## Run
+
+```bash
+pip install -r requirements.txt
+python main.py
+# or
+docker build -t miumiu . && docker run --env-file .env -p 8080:8080 miumiu
+```
+
+23.04.2026 — homecoming day (beget cloud → Raspberry Pi 3)

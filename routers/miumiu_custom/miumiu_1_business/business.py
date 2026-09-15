@@ -1,6 +1,5 @@
 import datetime
 import json
-import os
 from datetime import datetime, timedelta
 from typing import Dict
 from typing import List
@@ -8,33 +7,25 @@ from typing import List
 import httpx
 import pytz
 import requests
-from aiogram import Bot, Router, F
-from aiogram import types, Dispatcher
+from aiogram import F, Router, types
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
-    ReplyKeyboardMarkup,
     KeyboardButton,
     Message,
+    ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
 )
-from dotenv import load_dotenv
 
-from keyboards.on_start import ButtonText
+from config import settings
+from keyboards.on_start import ButtonText, get_on_help_kb, get_on_start_kb
 
-load_dotenv()
-
-bot_token = os.getenv('BOT_TOKEN')
-forecast_api = os.getenv('WEATHER_API_TOKEN')
-nasa_api = os.getenv('NASA_API_TOKEN')
-open_exchange = os.getenv('OPEN_EXCHANGE_TOKEN')
-big_poco = os.getenv('YANDEX_ID_ADMIN')
-yandex_api_key = os.getenv('YANDEX_API_KEY')
-
-bot = Bot(token=bot_token)
-dp = Dispatcher(bot=bot, storage=MemoryStorage())
+forecast_api = settings.weather_api_token
+nasa_api = settings.nasa_api_token
+open_exchange = settings.open_exchange_token
+big_poco = settings.yandex_id_admin
+yandex_api_key = settings.yandex_api_key
 
 data_amount = 0
 
@@ -72,25 +63,15 @@ class Questioning(StatesGroup):
     Asking = State()
 
 
-storage = MemoryStorage()
-
 city_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
     [
-        KeyboardButton(text="/weather Москва")
+        KeyboardButton(text="/weather Москва"),
+        KeyboardButton(text=ButtonText.BACK),
     ]
 ])
 
 
 @router.message(F.text == ButtonText.WEATHER)
-async def handle_weather_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to ask me about the weather,\n"
-             "click /weather_start any time! Meow~ :3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
 @router.message(Command("weather_start", prefix="/!%"))
 async def weather_start(message: Message, state: FSMContext):
     await message.answer(
@@ -102,82 +83,105 @@ async def weather_start(message: Message, state: FSMContext):
     await state.set_state(WeatherQuery.WaitingForCity)
 
 
-@router.message(WeatherQuery.WaitingForCity, F.text.in_(city_keyboard))
+@router.message(WeatherQuery.WaitingForCity, F.text == ButtonText.BACK)
+async def weather_back(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Back to menu :3", reply_markup=get_on_help_kb())
+
+
+@router.message(WeatherQuery.WaitingForCity, F.text)
 async def ask_city(message: Message, state: FSMContext):
-    await state.update_data(ask_city=message.text.lower())
-    await message.answer(
-        text="Спасибо. Теперь, пожалуйста, введите название города:",
-        reply_markup=city_keyboard,
-    )
-    await state.set_state(WeatherQuery.WaitingForCity)
+    text = (message.text or "").strip()
+    if text in {ButtonText.BACK, ButtonText.MAIN_MENU}:
+        await state.clear()
+        await message.answer("Back to menu :3", reply_markup=get_on_help_kb())
+        return
+    if text.startswith("/weather"):
+        parts = text.split(maxsplit=1)
+        city = parts[1] if len(parts) > 1 else "Москва"
+    else:
+        city = text
+    await get_weather(message, city)
+    await state.clear()
 
 
 @router.message(Command("weather"))
-async def get_weather_command(message: types.Message):
-    print("Weather command received!")
-    command_parts = message.text.split(maxsplit=1)
+async def get_weather_command(message: types.Message, state: FSMContext):
+    command_parts = (message.text or "").split(maxsplit=1)
     if len(command_parts) > 1:
-        city = command_parts[1]
-        print("City:", city)
-        await get_weather(message, city)
-    else:
-        await message.reply("Please specify a city after the command.")
+        await get_weather(message, command_parts[1])
+        await state.clear()
+        return
+    await weather_start(message, state)
 
 
 async def get_weather(message: types.Message, city: str):
-    res = requests.get(
-        f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={forecast_api}&units=metric'
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather"
+        f"?q={city}&appid={forecast_api}&units=metric"
     )
-    if res.status_code == 200:
-        data = json.loads(res.text)
-        temp = data['main']['temp']
-        pressure_hPa = data['main']['pressure']
-        pressure_mmHg = round(pressure_hPa * 0.750062, 2)
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            res = await client.get(url)
+    except httpx.HTTPError as exc:
+        print(f"Weather HTTP error: {exc}")
+        await message.reply("Не удалось получить погоду. Попробуйте позже.")
+        return
 
-        pressure_messages = {
-            pressure_mmHg > 755: 'Повышенное',
-            730 < pressure_mmHg <= 755: 'Умеренное',
-            pressure_mmHg <= 730: 'Пониженное'
-        }
-
-        pressure_message = next((msg for condition, msg in pressure_messages.items() if condition),
-                                'Данные о давлении недоступны!')
-
-        weather_kind = data['weather'][0]['main']
-
-        timezone_offset = timedelta(seconds=data['timezone'])
-        city_timezone = pytz.FixedOffset(int(timezone_offset.total_seconds() / 60))
-        local_time = datetime.now(city_timezone)
-
-        if 6 <= local_time.hour < 12:
-            current_time_range = 'Утро'
-        elif 12 <= local_time.hour < 18:
-            current_time_range = 'День'
-        elif 18 <= local_time.hour < 24:
-            current_time_range = 'Вечер'
-        else:
-            current_time_range = 'Ночь'
-
-        current_time_str = local_time.strftime('%H:%M')
-
-        if isinstance(weather_stickers[weather_kind], dict):
-            sticker_id = weather_stickers[weather_kind].get(current_time_range)
-        else:
-            sticker_id = weather_stickers[weather_kind]
-
-        if sticker_id:
-            await message.answer_sticker(sticker_id)
-
-        await message.reply(
-            f"Температура сейчас: {temp}°C\n"
-            f"{pressure_message} давление: {pressure_mmHg} мм рт ст\n"
-            f"Местное время суток: {current_time_range}, {current_time_str}\n"
-            f"{weather_translations.get(weather_kind, 'Ясно')}"
-        )
-
-    else:
+    if res.status_code != 200:
         print(f"Ошибка при запросе: {res.status_code}")
-        await message.reply("Такого города нет. Введите существующий город, пожалуйста.")
+        await message.reply(
+            "Такого города нет. Введите существующий город, пожалуйста.",
+            reply_markup=get_on_help_kb(),
+        )
+        return
+
+    data = res.json()
+    temp = data["main"]["temp"]
+    pressure_hPa = data["main"]["pressure"]
+    pressure_mmHg = round(pressure_hPa * 0.750062, 2)
+
+    if pressure_mmHg > 755:
+        pressure_message = "Повышенное"
+    elif pressure_mmHg > 730:
+        pressure_message = "Умеренное"
+    else:
+        pressure_message = "Пониженное"
+
+    weather_kind = data["weather"][0]["main"]
+
+    timezone_offset = timedelta(seconds=data["timezone"])
+    city_timezone = pytz.FixedOffset(int(timezone_offset.total_seconds() / 60))
+    local_time = datetime.now(city_timezone)
+
+    if 6 <= local_time.hour < 12:
+        current_time_range = "Утро"
+    elif 12 <= local_time.hour < 18:
+        current_time_range = "День"
+    elif 18 <= local_time.hour < 24:
+        current_time_range = "Вечер"
+    else:
+        current_time_range = "Ночь"
+
+    current_time_str = local_time.strftime("%H:%M")
+
+    sticker_entry = weather_stickers.get(weather_kind)
+    sticker_id = None
+    if isinstance(sticker_entry, dict):
+        sticker_id = sticker_entry.get(current_time_range)
+    elif isinstance(sticker_entry, str):
+        sticker_id = sticker_entry
+
+    if sticker_id:
+        await message.answer_sticker(sticker_id)
+
+    await message.reply(
+        f"Температура сейчас: {temp}°C\n"
+        f"{pressure_message} давление: {pressure_mmHg} мм рт ст\n"
+        f"Местное время суток: {current_time_range}, {current_time_str}\n"
+        f"{weather_translations.get(weather_kind, weather_kind)}",
+        reply_markup=get_on_help_kb(),
+    )
 
 
 # NASA - MAGNETIC SOLAR STORMS =========================================================================================
@@ -249,15 +253,6 @@ async def get_magnetic_storm_data(message: types.Message, nasa_api: str):
 
 
 @router.message(F.text == ButtonText.MAGNETIC_STORM)
-async def handle_magnetic_storm_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to ask me about the solar magnetic storms,\n"
-             "click /magnetic_storm any time to ask NASA! >:3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
 @router.message(Command("magnetic_storm", prefix="!/"))
 async def get_magnetic_storm_command(message: types.Message):
     await get_magnetic_storm_data(message, nasa_api)
@@ -275,68 +270,79 @@ headers_yandex_gpt = {
 }
 
 
-@router.message(F.text == ButtonText.YANDEX_GPT)
-async def handle_yandexgpt_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to ask me about something,\n"
-             "click /ask_miumiu_gpt any time! :3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
+@router.message(F.text.in_({ButtonText.YANDEX_GPT, ButtonText.ALICE}))
 @router.message(Command("ask_miumiu_gpt", prefix="/!%"))
 async def ask_miumiu_gpt(message: Message, state: FSMContext):
+    alice_kb = ReplyKeyboardMarkup(
+        resize_keyboard=True,
+        keyboard=[[KeyboardButton(text=ButtonText.BACK)]],
+    )
     await message.answer(
         "Привет! Задайте ваш вопрос :3\n"
         "Пожалуйста, не обижайте меня и не задавайте грубые вопросы 😸\n"
-        "You may now ask your question /ᐠ｡ꞈ｡ᐟ\ﾉ\n"
-        "Don't be mean and don't ask violent or forbidden questions :c",
-        reply_markup=types.ReplyKeyboardRemove(),
+        "You may now ask your question /ᐠ｡ꞈ｡ᐟ\\ﾉ\n"
+        "Don't be mean and don't ask violent or forbidden questions :c\n"
+        f"(or tap {ButtonText.BACK} / /cancel)",
+        reply_markup=alice_kb,
     )
     await state.set_state(Danila.Yandex_GPT)
+
+
+@router.message(Danila.Yandex_GPT, F.text.in_({ButtonText.BACK, ButtonText.MAIN_MENU, "/cancel"}))
+async def cancel_alice(message: Message, state: FSMContext):
+    await state.clear()
+    kb = get_on_start_kb() if message.text == ButtonText.MAIN_MENU else get_on_help_kb()
+    await message.answer("Ок, выходим из чата с Алисой :3", reply_markup=kb)
 
 
 @router.message(Danila.Yandex_GPT)
 async def handle_user_input(message: Message, state: FSMContext):
     await message.answer("Подождите пожалуйста, обрабатываю запрос ^w^")
 
-    current_state = await state.get_state()
-
-    print("Current State:", current_state)
-
-    if current_state == Danila.Yandex_GPT:
-        message_for_yandex = {
-            "modelUri": f"gpt://{big_poco}/yandexgpt-lite",
-            "completionOptions": {
-                "stream": False,
-                "temperature": 0.4,
-                "maxTokens": "2000"
+    message_for_yandex = {
+        "modelUri": f"gpt://{big_poco}/yandexgpt-lite",
+        "completionOptions": {
+            "stream": False,
+            "temperature": 0.4,
+            "maxTokens": "2000",
+        },
+        "messages": [
+            {
+                "role": "user",
+                "text": message.text,
             },
-            "messages": [
-                {
-                    "role": "user",
-                    "text": message.text
-                },
-            ]
-        }
+        ],
+    }
 
-        response_yandex_gpt = requests.post(yandex_url, headers=headers_yandex_gpt, json=message_for_yandex)
-        result_yandex_gpt = response_yandex_gpt.json()
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response_yandex_gpt = await client.post(
+                yandex_url, headers=headers_yandex_gpt, json=message_for_yandex
+            )
+            result_yandex_gpt = response_yandex_gpt.json()
+    except httpx.HTTPError as exc:
+        print(f"Yandex GPT HTTP error: {exc}")
+        await state.clear()
+        await message.answer(
+            "Не удалось связаться с Алисой. Попробуйте позже.",
+            reply_markup=get_on_help_kb(),
+        )
+        return
 
-        print("Yandex GPT Response:", result_yandex_gpt)
+    print("Yandex GPT Response:", result_yandex_gpt)
 
-        try:
-            yandex_response = result_yandex_gpt["result"]["alternatives"][0]["message"]["text"]
-            await message.answer(yandex_response)
-        except KeyError:
-            await message.answer("Error: Unable to fetch response.")
-        finally:
-            await state.clear()
-    else:
-        await message.answer("Please initiate the conversation with /ask_miumiu_gpt first.")
+    try:
+        yandex_response = result_yandex_gpt["result"]["alternatives"][0]["message"]["text"]
+        await message.answer(yandex_response)
+    except (KeyError, TypeError, IndexError):
+        await message.answer("Error: Unable to fetch response.")
+    finally:
+        await state.clear()
 
-    await message.answer("Если нужно что-то ещё, смело нажимай /ask_miumiu_gpt :3")
+    await message.answer(
+        "Если нужно что-то ещё — нажми Alice / /ask_miumiu_gpt :3",
+        reply_markup=get_on_help_kb(),
+    )
 
 
 # CURRENCY CONVERTER ===================================================================================================
@@ -346,20 +352,24 @@ class ConversionStates(StatesGroup):
 
 
 @router.message(F.text == ButtonText.CURRENCY)
-async def handle_currency_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to ask me about the currency,\n"
-             "click /convert_money any time! :3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
 @router.message(Command("convert_money", prefix="/"))
 async def start_conversion(message: Message, state: FSMContext):
-    await message.answer("Welcome to the Currency Converter Bot!\n"
-                         "Please enter the amount to convert:")
+    amount_kb = ReplyKeyboardMarkup(
+        resize_keyboard=True,
+        keyboard=[[KeyboardButton(text=ButtonText.BACK)]],
+    )
+    await message.answer(
+        "Welcome to the Currency Converter Bot!\n"
+        "Please enter the amount to convert:",
+        reply_markup=amount_kb,
+    )
     await state.set_state(ConversionStates.AWAITING_AMOUNT)
+
+
+@router.message(StateFilter(ConversionStates.AWAITING_AMOUNT), F.text == ButtonText.BACK)
+async def currency_amount_back(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Back to menu :3", reply_markup=get_on_help_kb())
 
 
 @router.message(StateFilter(ConversionStates.AWAITING_AMOUNT))
@@ -382,12 +392,19 @@ async def process_amount(message: Message, state: FSMContext):
             [KeyboardButton(text='RSD/RUB'), KeyboardButton(text='AMD/RUB'), KeyboardButton(text='CNY/RUB')],
             [KeyboardButton(text='JPY/RUB'), KeyboardButton(text='RUB/USD'), KeyboardButton(text='RUB/EUR')],
             [KeyboardButton(text='RUB/HUF'), KeyboardButton(text='RUB/RSD'), KeyboardButton(text='RUB/AMD')],
-            [KeyboardButton(text='RUB/CNY'), KeyboardButton(text='RUB/JPY'), KeyboardButton(text='/convert_money')]
+            [KeyboardButton(text='RUB/CNY'), KeyboardButton(text='RUB/JPY')],
+            [KeyboardButton(text=ButtonText.BACK)],
         ])
     await message.answer('Please select the currency pair', reply_markup=keyboard_markup)
 
     await state.update_data(amount=amount)
     await state.set_state(ConversionStates.AWAITING_CURRENCY_PAIR)
+
+
+@router.message(StateFilter(ConversionStates.AWAITING_CURRENCY_PAIR), F.text == ButtonText.BACK)
+async def currency_back(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Back to menu :3", reply_markup=get_on_help_kb())
 
 
 @router.message(StateFilter(ConversionStates.AWAITING_CURRENCY_PAIR))
@@ -424,7 +441,8 @@ async def process_currency_pair(message: types.Message, state: FSMContext):
             conversion_rate = exchange_rates.get(currency_to) / exchange_rates.get(currency_from)
             result = amount * conversion_rate
             await message.answer(f'Result: {round(result, 2)}. You can enter the amount again!\n'
-                                 f'Press /convert_money here :3')
+                                 f'Press /convert_money here :3',
+                                 reply_markup=get_on_help_kb())
             await state.clear()
         else:
             await message.answer('Failed to fetch exchange rates. Please try again later.')

@@ -4,27 +4,18 @@ import os
 import re
 
 import aiohttp
-from aiogram import (
-    types,
-    Dispatcher,
-    Router,
-    Bot,
-)
-from aiogram.enums import ParseMode, ChatAction
+from aiogram import Router, types
+from aiogram.enums import ChatAction, ParseMode
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils import markdown
 from aiogram.utils.chat_action import ChatActionSender
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from dotenv import load_dotenv
 
-bot_token = os.getenv('BOT_TOKEN')
-forecast_api = os.getenv('WEATHER_API_TOKEN')
-load_dotenv()
+from config import settings
 
-bot = Bot(token=bot_token)
-dp = Dispatcher()
+forecast_api = settings.weather_api_token
 
 router = Router(name=__name__)
 

@@ -1,122 +1,153 @@
-import os
+from typing import Optional
 
-from aiogram import Bot
-from aiogram import Router, F
-from aiogram import types, Dispatcher
-from aiogram.filters import Command
+from aiogram import F, Router, types
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
-    ReplyKeyboardMarkup,
-    KeyboardButton,
-    InlineKeyboardMarkup,
     InlineKeyboardButton,
-    ReplyKeyboardRemove,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
 )
-from dotenv import load_dotenv
 
-from keyboards.on_start import ButtonText
-
-bot_token = os.getenv('BOT_TOKEN')
-
-load_dotenv()
-
-bot = Bot(token=bot_token)
-dp = Dispatcher()
+from keyboards.on_start import ButtonText, get_on_help_kb
 
 router = Router(name=__name__)
 
 
 # CALCULATOR ===========================================================================================================
-@router.message(F.text == ButtonText.CALCULATOR)
-async def handle_calculator_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to count with me,\n"
-             "click /calculator any time! :3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
+class CalcStates(StatesGroup):
+    waiting_numbers = State()
 
 
-@router.message(Command("calculator", prefix="/!%"))
-async def send_welcome(message: types.Message):
-    await message.reply(
-        "Hi!\nI'm a calculator bot. "
-        "\nYou can perform calculations by sending me commands like: "
-        "\n/add 5 3, "
-        "\n/subtract 7 2, "
-        "\n/multiply 4 6, "
-        "\n/divide 8 2."
-        "\nPlease, use only integer numbers!"
-    )
+OP_SYMBOLS = {
+    "add": "+",
+    "subtract": "-",
+    "multiply": "*",
+    "divide": "/",
+}
 
 
-# Function to create a row of calculator operation buttons
 def make_row_calculator_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     row = [KeyboardButton(text=item) for item in items]
     return ReplyKeyboardMarkup(
-        keyboard=[row],
+        keyboard=[row, [KeyboardButton(text=ButtonText.BACK)]],
         resize_keyboard=True,
     )
 
 
-# Command handler for /calculator
+@router.message(F.text == ButtonText.CALCULATOR)
 @router.message(Command("calculator", prefix="/!%"))
-async def send_welcome(message: types.Message):
-    calculator_operations = [
-        "/add",
-        "/subtract",
-        "/multiply",
-        "/divide",
-    ]
+async def send_welcome(message: types.Message, state: FSMContext):
+    await state.clear()
+    calculator_operations = ["Add", "Subtract", "Multiply", "Divide"]
     keyboard = make_row_calculator_keyboard(calculator_operations)
-    await message.reply("Choose a calculator operation:", reply_markup=keyboard)
+    await message.reply(
+        "Calculator\n"
+        "Tap an operation, then send two numbers like: `5 3`\n"
+        "Or type: /add 5 3",
+        reply_markup=keyboard,
+        parse_mode="Markdown",
+    )
 
 
-# Command handler for each operation
+@router.message(F.text.in_({"Add", "Subtract", "Multiply", "Divide"}))
+async def pick_calc_op(message: types.Message, state: FSMContext):
+    op = message.text.lower()
+    await state.set_state(CalcStates.waiting_numbers)
+    await state.update_data(op=op)
+    await message.answer(f"Send two numbers for {message.text}, e.g. `12 4`", parse_mode="Markdown")
+
+
+@router.message(CalcStates.waiting_numbers, F.text == ButtonText.BACK)
+async def calc_back(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Back to menu :3", reply_markup=get_on_help_kb())
+
+
+@router.message(CalcStates.waiting_numbers)
+async def calc_numbers(message: types.Message, state: FSMContext):
+    parts = (message.text or "").split()
+    if len(parts) != 2:
+        await message.reply("Please send exactly two numbers, e.g. 12 4")
+        return
+    try:
+        num1 = float(parts[0])
+        num2 = float(parts[1])
+    except ValueError:
+        await message.reply("Invalid numbers. Try again, e.g. 12 4")
+        return
+
+    data = await state.get_data()
+    op = data.get("op", "add")
+    symbol = OP_SYMBOLS.get(op, "+")
+    await state.clear()
+    await _compute_and_reply(message, symbol, num1, num2)
+
+
 @router.message(Command("add", prefix="/!%"))
-async def add(message: types.Message):
-    await process_operation(message, '+')
+async def add(message: types.Message, state: FSMContext):
+    await process_operation(message, "+", state)
 
 
 @router.message(Command("subtract", prefix="/!%"))
-async def subtract(message: types.Message):
-    await process_operation(message, '-')
+async def subtract(message: types.Message, state: FSMContext):
+    await process_operation(message, "-", state)
 
 
 @router.message(Command("multiply", prefix="/!%"))
-async def multiply(message: types.Message):
-    await process_operation(message, '*')
+async def multiply(message: types.Message, state: FSMContext):
+    await process_operation(message, "*", state)
 
 
 @router.message(Command("divide", prefix="/!%"))
-async def divide(message: types.Message):
-    await process_operation(message, '/')
+async def divide(message: types.Message, state: FSMContext):
+    await process_operation(message, "/", state)
 
 
-# Function to process the operation and provide the result
-async def process_operation(message: types.Message, operator: str):
+async def process_operation(message: types.Message, operator: str, state: Optional[FSMContext] = None):
+    parts = (message.text or "").split()
+    if len(parts) < 3:
+        op_name = { "+": "add", "-": "subtract", "*": "multiply", "/": "divide" }[operator]
+        if state is not None:
+            await state.set_state(CalcStates.waiting_numbers)
+            await state.update_data(op=op_name)
+        await message.reply(f"Send two numbers for {operator}, e.g. 5 3")
+        return
     try:
-        command, num1, num2 = message.text.split()
-        num1 = float(num1)
-        num2 = float(num2)
+        num1 = float(parts[1])
+        num2 = float(parts[2])
     except ValueError:
         await message.reply("Invalid input. Please provide two numbers UwU")
         return
+    if state is not None:
+        await state.clear()
+    await _compute_and_reply(message, operator, num1, num2)
 
-    result = None
-    if operator == '+':
+
+async def _compute_and_reply(message: types.Message, operator: str, num1: float, num2: float):
+    if operator == "+":
         result = round(num1 + num2)
-    elif operator == '-':
+    elif operator == "-":
         result = round(num1 - num2)
-    elif operator == '*':
+    elif operator == "*":
         result = round(num1 * num2)
-    elif operator == '/':
-        if num2 != 0:
-            result = num1 / num2
-        else:
+    elif operator == "/":
+        if num2 == 0:
             await message.reply("Division by zero is not allowed.")
             return
+        result = num1 / num2
+    else:
+        await message.reply("Unknown operation")
+        return
+    await message.reply(f"Result: {result}", reply_markup=get_on_help_kb())
 
-    await message.reply(f"Result: {result}")
+
+@router.message(F.text == ButtonText.BACK)
+async def mathix_back_menu(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Back to help menu :3", reply_markup=get_on_help_kb())
 
 
 # CONVERTER ============================================================================================================
@@ -321,80 +352,83 @@ additional_keyboards = {
 
 
 @router.message(F.text == ButtonText.CONVERTER)
-async def handle_converter_message(message: types.Message):
-    await message.answer(
-        text="Meow! If you want to use converter,\n"
-             "click /converter any time! :3",
-        reply_markup=ReplyKeyboardRemove(),
-        one_time_keyboard=True
-    )
-
-
 @router.message(Command("converter", prefix="/!%"))
-async def converter_menu(message: types.Message):
+async def converter_menu(message: types.Message, state: FSMContext):
+    await state.clear()
     keyboard = create_keyboard(list(additional_keyboards.keys()))
     await message.reply("Choose a conversion:", reply_markup=keyboard)
 
 
-last_conversion_command = None
+class UnitConvertStates(StatesGroup):
+    waiting_value = State()
+
+
+ADDITIONAL_INFO = {
+    "/inches_to_cm": "cm",
+    "/cm_to_inches": "inches",
+    "/miles_to_km": "km",
+    "/km_to_miles": "miles",
+    "/pounds_to_kg": "kg",
+    "/kg_to_pounds": "pounds",
+    "/fahrenheit_to_celsius": "°C",
+    "/celsius_to_fahrenheit": "°F",
+    "/ounces_to_ml": "mL",
+    "/ml_to_ounces": "ounces",
+    "/gallons_to_liters": "liters",
+    "/liters_to_gallons": "gallons",
+    "/feet_to_meters": "meters",
+    "/meters_to_feet": "feet",
+    "/yards_to_meters": "meters",
+    "/meters_to_yards": "yards",
+    "/cups_to_liters": "liters",
+    "/liters_to_cups": "cups",
+}
 
 
 @router.callback_query(lambda c: c.data in additional_keyboards or c.data in conversion_functions)
-async def handle_conversion_query(callback_query: types.CallbackQuery):
-    global last_conversion_command
+async def handle_conversion_query(callback_query: types.CallbackQuery, state: FSMContext):
     conversion_command = callback_query.data
+    await callback_query.answer()
     if conversion_command in additional_keyboards:
-        last_conversion_command = conversion_command
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[additional_keyboards[conversion_command]])
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[additional_keyboards[conversion_command]]
+        )
         await callback_query.message.answer("Choose an option:", reply_markup=keyboard)
     elif conversion_command in conversion_functions:
-        last_conversion_command = conversion_command
-        await callback_query.message.answer("Please enter the value to convert for " + conversion_command + ":")
+        await state.set_state(UnitConvertStates.waiting_value)
+        await state.update_data(conversion_command=conversion_command)
+        await callback_query.message.answer(
+            f"Enter the value to convert for {conversion_command}:"
+        )
     else:
         await callback_query.message.answer("Invalid conversion option!")
 
 
-@router.message(
-    lambda message: message.text and message.text.strip().replace('.', '', 1).isdigit()
-                    and last_conversion_command is not None
-)
-async def handle_numbers(message: types.Message):
-    if last_conversion_command in conversion_functions:
-        try:
-            number = float(message.text)
-            result = conversion_functions[last_conversion_command](number)
-            rounded_result = round(result, 1)
-            additional_info = {
-                "/inches_to_cm": f"Your result is {rounded_result} cm.",
-                "/cm_to_inches": f"Your result is {rounded_result} inches.",
+@router.message(StateFilter(UnitConvertStates.waiting_value), F.text == ButtonText.BACK)
+async def unit_convert_back(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.reply("Back to menu :3", reply_markup=get_on_help_kb())
 
-                "/miles_to_km": f"Your result is {rounded_result} km.",
-                "/km_to_miles": f"Your result is {rounded_result} miles.",
 
-                "/pounds_to_kg": f"Your result is {rounded_result} kg.",
-                "/kg_to_pounds": f"Your result is {rounded_result} pounds.",
+@router.message(StateFilter(UnitConvertStates.waiting_value))
+async def handle_conversion_value(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    conversion_command = data.get("conversion_command")
+    if conversion_command not in conversion_functions:
+        await state.clear()
+        await message.reply("Please choose a conversion from the menu first.")
+        return
+    try:
+        number = float((message.text or "").strip())
+    except ValueError:
+        await message.reply("Invalid input. Please enter a valid number.")
+        return
 
-                "/fahrenheit_to_celsius": f"Your result is {rounded_result} °C.",
-                "/celsius_to_fahrenheit": f"Your result is {rounded_result} °F.",
-
-                "/ounces_to_ml": f"Your result is {rounded_result} mL.",
-                "/ml_to_ounces": f"Your result is {rounded_result} ounces.",
-
-                "/gallons_to_liters": f"Your result is {rounded_result} liters.",
-                "/liters_to_gallons": f"Your result is {rounded_result} gallons.",
-
-                "/feet_to_meters": f"Your result is {rounded_result} meters.",
-                "/meters_to_feet": f"Your result is {rounded_result} feet.",
-
-                "/yards_to_meters": f"Your result is {rounded_result} meters.",
-                "/meters_to_yards": f"Your result is {rounded_result} yards.",
-
-                "/cups_to_liters": f"Your result is {rounded_result} liters.",
-                "/liters_to_cups": f"Your result is {rounded_result} cups.",
-            }
-            additional_info_text = additional_info.get(last_conversion_command, "")
-            await message.reply(additional_info_text)
-        except ValueError:
-            await message.reply("Invalid input. Please enter a valid number.")
-    else:
-        await message.reply("Please enter a valid conversion command first.")
+    result = conversion_functions[conversion_command](number)
+    rounded_result = round(result, 1)
+    unit = ADDITIONAL_INFO.get(conversion_command, "")
+    await state.clear()
+    await message.reply(
+        f"Your result is {rounded_result} {unit}.",
+        reply_markup=get_on_help_kb(),
+    )

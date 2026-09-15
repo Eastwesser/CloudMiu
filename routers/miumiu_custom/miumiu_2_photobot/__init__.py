@@ -1,7 +1,7 @@
 from aiogram import Router
 
-from . import photobot
+from . import drawer, photobot
 
-router = Router()
-
+router = Router(name="photobot_pkg")
+router.include_router(drawer.router)
 router.include_router(photobot.router)

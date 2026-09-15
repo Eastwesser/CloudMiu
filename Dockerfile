@@ -1,3 +1,7 @@
+# Raspberry Pi 3B+ (armv7l):
+#   docker buildx build --platform linux/arm/v7 -t eastwesser/home_arm_miumiu2:latest --push .
+# Windows/x86 local smoke (not for the Pi):
+#   docker compose build
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -15,14 +19,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# polling by default; override via compose/.env
 CMD ["python", "main.py"]
-
-#FROM python:3.10-slim
-#
-#WORKDIR /app
-#
-#COPY . /app
-#
-#RUN pip install --no-cache-dir -r requirements.txt
-#
-#CMD ["python", "main.py"]
